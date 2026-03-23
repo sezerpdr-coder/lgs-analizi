@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="tr" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
+    <title>Öğrenci Gelişim Analiz Paneli PRO</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; display: flex; flex-direction: column; min-height: 100vh; }
+        .container { max-width: 1300px; margin: auto; display: grid; grid-template-columns: 300px 1fr; gap: 20px; flex: 1; width: 100%; box-sizing: border-box; }
+        header { grid-column: 1 / -1; background: #2c3e50; color: white; padding: 20px; border-radius: 10px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        header h1 { margin: 0; font-size: 28px; }
+        header h2 { margin: 5px 0 0 0; font-size: 18px; font-weight: 300; color: #ecf0f1; opacity: 0.9; }
+        .sidebar, .main-content { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        select { width: 100%; padding: 10px; margin: 5px 0 15px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; font-size: 14px; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-bottom: 10px; transition: 0.3s; }
+        .btn-refresh { background: #27ae60; color: white; }
+        .btn-report { background: #8e44ad; color: white; }
+        .info-box { background: #e8f4fd; padding: 15px; border-radius: 8px; border-left: 5px solid #3498db; font-size: 13px; color: #333; margin-bottom: 20px; line-height: 1.5; }
+        .main-tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .main-tabs button { background: #ecf0f1; color: #2c3e50; border-radius: 5px; padding: 10px; flex: 1; margin: 0; min-width: 120px; }
+        .main-tabs button.active { background: #2c3e50; color: white; }
+        .branch-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 15px; }
+        .branch-tabs button { width: 100%; padding: 8px 2px; font-size: 12px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 5px; color: #555; margin: 0; }
+        .branch-tabs button.active { background: #3498db; color: white; border-color: #3498db; }
+        .stats-container { display: flex; gap: 15px; margin-top: 15px; min-height: 80px; flex-wrap: wrap; }
+        .stat-card { flex: 1 1 100px; background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #eee; min-width: 90px; }
+        .stat-card h4 { margin: 0 0 10px 0; font-size: 13px; color: #7f8c8d; }
+        .stat-value { font-size: 19px; font-weight: bold; color: #2c3e50; }
+        .stat-card.highlight { background: #e8f4fd; border-color: #3498db; }
+        .table-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 20px; border-radius: 5px; border: 1px solid #eee; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 800px; }
+        th, td { border: 1px solid #eee; padding: 12px 8px; text-align: center; }
+        th { background: #f8f9fa; color: #2c3e50; font-weight: bold; }
+        .chart-box { margin-top: 10px; height: 350px; }
+        .filter-section { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee; }
+        .view-section { display: none; }
+        .view-section.active { display: block; }
+        .loading-overlay { display: none; text-align: center; padding: 40px; font-weight: bold; color: #2980b9; }
+        footer { text-align: center; padding: 25px; margin-top: auto; font-size: 12px; color: #7f8c8d; border-top: 1px solid #ddd; }
+        @media (max-width: 768px) {
+            .container { grid-template-columns: 1fr; padding: 10px; }
+            .sidebar { order: 2; }
+            .main-content { order: 1; }
+            .branch-tabs { grid-template-columns: repeat(2, 1fr); }
+            .stat-value { font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🎓 Öğrenci Gelişim & LGS Analiz Sistemi</h1>
+    <h2>Kıbrıs Ortaokulu Rehberlik Servisi</h2>
+</header>
+
+<div class="container">
+    <div class="sidebar">
+        <h3>🔄 Veri Yönetimi</h3>
+        <div class="info-box">
+            <strong>Sütun Düzeni:</strong> A: Ad Soyad, B: Sınav, C: Türkçe, D: İnkılap, E: Din, F: İngilizce, G: Mat, H: Fen, I: LGS Puanı. (Toplam net sistem tarafından C-H toplanarak bulunur).
+        </div>
+        <button class="btn-refresh" onclick="verileriGetir()">🔄 Verileri Şimdi Yenile</button>
+        <button class="btn-report" onclick="excelRaporAl()">📊 Veriyi CSV Olarak İndir</button>
+    </div>
+
+    <div class="main-content">
+        <div class="main-tabs">
+            <button class="active" id="tabAnalizBtn" onclick="switchMainTab('analiz')">📈 Bireysel Analiz</button>
+            <button id="tabSiralamaBtn" onclick="switchMainTab('siralama')">🏆 Genel Sıralama</button>
+        </div>
+
+        <div id="loadingMsg" class="loading-overlay">⏳ Veriler tablodan çekiliyor, lütfen bekleyin...</div>
+
+        <div id="analizView" class="view-section active">
+            <div class="filter-section">
+                <label><strong>🔍 Öğrenci Seçin:</strong></label>
+                <select id="studentFilter" onchange="analizGuncelle()"></select>
+            </div>
+            
+            <div class="branch-tabs" id="branchTabs">
+                <button class="active" onclick="setBranch('total', this)">Toplam Net</button>
+                <button onclick="setBranch('lgs', this)">LGS Puanı</button>
+                <button onclick="setBranch('tur', this)">Türkçe</button>
+                <button onclick="setBranch('ink', this)">İnkılap</button>
+                <button onclick="setBranch('din', this)">Din K.</button>
+                <button onclick="setBranch('ing', this)">İngilizce</button>
+                <button onclick="setBranch('mat', this)">Matematik</button>
+                <button onclick="setBranch('fen', this)">Fen Bilimleri</button>
+            </div>
+
+            <div class="chart-box"><canvas id="devChart"></canvas></div>
+            <div class="stats-container" id="statsContainer"></div>
+
+            <div class="table-container">
+                <table id="resTable">
+                    <thead>
+                        <tr><th>Sınav</th><th>TÜR</th><th>İNK</th><th>DİN</th><th>İNG</th><th>MAT</th><th>FEN</th><th>TOPLAM NET</th><th>LGS PUANI</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="siralamaView" class="view-section">
+            <div class="filter-section">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <select id="examFilter" onchange="siralamaGuncelle()"></select>
+                    <select id="sortFilter" onchange="siralamaGuncelle()">
+                        <option value="lgs">Sıralama: LGS Puanı</option>
+                        <option value="total">Sıralama: Toplam Net</option>
+                        <option value="tur">Sıralama: Türkçe</option>
+                        <option value="ink">Sıralama: İnkılap</option>
+                        <option value="din">Sıralama: Din K.</option>
+                        <option value="ing">Sıralama: İngilizce</option>
+                        <option value="mat">Sıralama: Matematik</option>
+                        <option value="fen">Sıralama: Fen Bilimleri</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="stats-container" id="examAveragesContainer" style="display: none; margin-bottom: 20px;"></div>
+
+            <div class="table-container">
+                <table id="rankTable">
+                    <thead>
+                        <tr><th>Sıra</th><th>Öğrenci Adı</th><th>TÜR</th><th>İNK</th><th>DİN</th><th>İNG</th><th>MAT</th><th>FEN</th><th>TOPLAM NET</th><th>LGS PUANI</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    Kıbrıs Ortaokulu için Okul Psikolojik Danışmanı Sezer TEKİN tarafından tasarlanmıştır.
+</footer>
+
+<script>
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRv-FWL1F43vukW6ycM14PaawZ4vyN1_ZugKabHtsHabAgYCCYeVU6ohMEH79eFXYGTSK_TyhnYp6Qd/pub?gid=0&single=true&output=csv';
+    
+    let dataStore = [];
+    let myChart;
+    let currentBranch = 'total';
+    const branchNames = { 
+        total: 'Toplam Net', lgs: 'LGS Puanı', tur: 'Türkçe', 
+        ink: 'İnkılap', din: 'Din K.', ing: 'İngilizce', 
+        mat: 'Matematik', fen: 'Fen Bilimleri' 
+    };
+
+    window.addEventListener('DOMContentLoaded', verileriGetir);
+
+    async function verileriGetir() {
+        document.getElementById('loadingMsg').style.display = 'block';
+        try {
+            const response = await fetch(SHEET_URL + '&cache=' + new Date().getTime());
+            const rawData = await response.text();
+            
+            // Satırları temizle
+            const rows = rawData.split(/\r?\n/).filter(r => r.trim().length > 0);
+            const separator = rows[0].includes(';') ? ';' : ',';
+            
+            dataStore = [];
+            
+            // Başlık satırını atlayarak (i=1) döngüye başla
+            for(let i = 1; i < rows.length; i++) {
+                let rowStr = rows[i];
+                let cols = [];
+                let inQuotes = false;
+                let currentVal = '';
+                
+                // Virgül ve tırnak karmaşasını çözen özel parser
+                for (let char of rowStr) {
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (char === separator && !inQuotes) {
+                        cols.push(currentVal.trim());
+                        currentVal = '';
+                    } else {
+                        currentVal += char;
+                    }
+                }
+                cols.push(currentVal.trim());
+
+                // Eğer satırda yeterli sütun yoksa (A'dan I'ya kadar en az 9 sütun) atla
+                if(cols.length < 9) continue;
+
+                // Tablodaki sayıyı güvenli şekilde ondalık formata çevirir (15,50 -> 15.50)
+                const parseNum = (val) => {
+                    if (!val) return 0;
+                    let num = parseFloat(val.toString().replace(',', '.'));
+                    return isNaN(num) ? 0 : num;
+                };
+
+                // A: Ad (0), B: Sınav (1), C: Tür (2), D: İnk (3), E: Din (4), F: İng (5), G: Mat (6), H: Fen (7), I: LGS (8)
+                const tur = parseNum(cols[2]);
+                const ink = parseNum(cols[3]);
+                const din = parseNum(cols[4]);
+                const ing = parseNum(cols[5]);
+                const mat = parseNum(cols[6]);
+                const fen = parseNum(cols[7]);
+                const lgs = parseNum(cols[8]);
+
+                dataStore.push({
+                    name: cols[0],
+                    exam: cols[1],
+                    tur: tur, ink: ink, din: din,
+                    ing: ing, mat: mat, fen: fen,
+                    lgs: lgs,
+                    total: tur + ink + din + ing + mat + fen // Toplamı script kendisi net hesaplıyor
+                });
+            }
+
+            if (dataStore.length === 0) alert("Uyarı: Okunabilir veri bulunamadı. Lütfen E-Tablo yapınızı kontrol edin.");
+
+            dropdownlariGuncelle();
+            analizGuncelle();
+            
+        } catch (e) { 
+            console.error(e);
+            alert("Veri bağlantı hatası: " + e.message); 
+        }
+        document.getElementById('loadingMsg').style.display = 'none';
+    }
+
+    function dropdownlariGuncelle() {
+        const selectStd = document.getElementById('studentFilter');
+        const uniqueNames = [...new Set(dataStore.map(d => d.name))].sort();
+        selectStd.innerHTML = '<option value="">-- Öğrenci Seçin --</option>' + 
+            uniqueNames.map(n => `<option value="${n}">${n}</option>`).join('');
+
+        const selectEx = document.getElementById('examFilter');
+        const uniqueExams = [...new Set(dataStore.map(d => d.exam))];
+        selectEx.innerHTML = '<option value="">-- Sınav Seçin --</option>' + 
+            '<option value="GENEL_ORTALAMA" style="font-weight:bold; color: #e67e22;">🏆 Tüm Sınavların Genel Ortalaması</option>' +
+            uniqueExams.map(e => `<option value="${e}">${e}</option>`).join('');
+    }
+
+    function siralamaGuncelle() {
+        const exam = document.getElementById('examFilter').value;
+        const sortKey = document.getElementById('sortFilter').value;
+        const tbody = document.querySelector("#rankTable tbody");
+        const avgContainer = document.getElementById('examAveragesContainer');
+        
+        if(!exam) {
+            tbody.innerHTML = "<tr><td colspan='10'>Lütfen bir sınav belirleyin.</td></tr>";
+            avgContainer.style.display = 'none';
+            return;
+        }
+
+        let displayData = [];
+
+        if (exam === "GENEL_ORTALAMA") {
+            const studentGroups = {};
+            dataStore.forEach(d => {
+                if(!studentGroups[d.name]) studentGroups[d.name] = { tur:0, ink:0, din:0, ing:0, mat:0, fen:0, lgs:0, total:0, count:0 };
+                studentGroups[d.name].tur += d.tur;
+                studentGroups[d.name].ink += d.ink;
+                studentGroups[d.name].din += d.din;
+                studentGroups[d.name].ing += d.ing;
+                studentGroups[d.name].mat += d.mat;
+                studentGroups[d.name].fen += d.fen;
+                studentGroups[d.name].lgs += d.lgs;
+                studentGroups[d.name].total += d.total;
+                studentGroups[d.name].count++;
+            });
+
+            displayData = Object.keys(studentGroups).map(name => ({
+                name: name,
+                tur: studentGroups[name].tur / studentGroups[name].count,
+                ink: studentGroups[name].ink / studentGroups[name].count,
+                din: studentGroups[name].din / studentGroups[name].count,
+                ing: studentGroups[name].ing / studentGroups[name].count,
+                mat: studentGroups[name].mat / studentGroups[name].count,
+                fen: studentGroups[name].fen / studentGroups[name].count,
+                lgs: studentGroups[name].lgs / studentGroups[name].count,
+                total: studentGroups[name].total / studentGroups[name].count
+            }));
+        } else {
+            displayData = dataStore.filter(d => d.exam === exam);
+        }
+
+        displayData.sort((a, b) => b[sortKey] - a[sortKey]);
+
+        if(displayData.length > 0) {
+            const c = displayData.length;
+            const f = (key) => (displayData.reduce((acc, d) => acc + d[key], 0) / c).toFixed(2);
+            
+            avgContainer.innerHTML = `
+                <div class="stat-card"><h4>TÜR Ort.</h4><div class="stat-value">${f('tur')}</div></div>
+                <div class="stat-card"><h4>İNK Ort.</h4><div class="stat-value">${f('ink')}</div></div>
+                <div class="stat-card"><h4>DİN Ort.</h4><div class="stat-value">${f('din')}</div></div>
+                <div class="stat-card"><h4>İNG Ort.</h4><div class="stat-value">${f('ing')}</div></div>
+                <div class="stat-card"><h4>MAT Ort.</h4><div class="stat-value">${f('mat')}</div></div>
+                <div class="stat-card"><h4>FEN Ort.</h4><div class="stat-value">${f('fen')}</div></div>
+                <div class="stat-card highlight"><h4>Top. Net</h4><div class="stat-value" style="color:#2980b9;">${f('total')}</div></div>
+                <div class="stat-card highlight"><h4>LGS Puan</h4><div class="stat-value" style="color:#f39c12;">${f('lgs')}</div></div>
+            `;
+            avgContainer.style.display = 'flex';
+        }
+
+        const hl = (key) => sortKey === key ? 'font-weight:bold;background:#fff9db' : '';
+        tbody.innerHTML = displayData.map((d, i) => `
+            <tr>
+                <td>${i+1}</td>
+                <td style="text-align:left; font-weight:500;">${d.name}</td>
+                <td style="${hl('tur')}">${d.tur.toFixed(2)}</td><td style="${hl('ink')}">${d.ink.toFixed(2)}</td>
+                <td style="${hl('din')}">${d.din.toFixed(2)}</td><td style="${hl('ing')}">${d.ing.toFixed(2)}</td>
+                <td style="${hl('mat')}">${d.mat.toFixed(2)}</td><td style="${hl('fen')}">${d.fen.toFixed(2)}</td>
+                <td style="color:#2980b9; ${hl('total')}">${d.total.toFixed(2)}</td>
+                <td style="color:#e67e22; ${hl('lgs')}">${d.lgs.toFixed(2)}</td>
+            </tr>
+        `).join('');
+    }
+
+    function analizGuncelle() {
+        const student = document.getElementById('studentFilter').value;
+        const filtered = dataStore.filter(d => d.name === student);
+        const tbody = document.querySelector("#resTable tbody");
+        const stats = document.getElementById('statsContainer');
+
+        if(!student) {
+            tbody.innerHTML = "<tr><td colspan='9'>Lütfen bir öğrenci seçin.</td></tr>";
+            stats.innerHTML = ""; if(myChart) myChart.destroy(); return;
+        }
+
+        tbody.innerHTML = filtered.map(d => `
+            <tr>
+                <td>${d.exam}</td><td>${d.tur.toFixed(2)}</td><td>${d.ink.toFixed(2)}</td><td>${d.din.toFixed(2)}</td>
+                <td>${d.ing.toFixed(2)}</td><td>${d.mat.toFixed(2)}</td><td>${d.fen.toFixed(2)}</td>
+                <td style="font-weight:bold; color:#2980b9">${d.total.toFixed(2)}</td>
+                <td style="font-weight:bold; color:#f39c12">${d.lgs.toFixed(2)}</td>
+            </tr>
+        `).join('');
+
+        const ctx = document.getElementById('devChart').getContext('2d');
+        if(myChart) myChart.destroy();
+        myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: filtered.map(d => d.exam),
+                datasets: [{
+                    label: branchNames[currentBranch],
+                    data: filtered.map(d => d[currentBranch]),
+                    borderColor: '#3498db', backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    fill: true, tension: 0.3, pointRadius: 5
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        const last = filtered[filtered.length-1];
+        const avg = filtered.reduce((s, d) => s + d[currentBranch], 0) / filtered.length;
+        stats.innerHTML = `
+            <div class="stat-card"><h4>Son Net/Puan</h4><div class="stat-value">${last[currentBranch].toFixed(2)}</div></div>
+            <div class="stat-card"><h4>Öğrenci Ort.</h4><div class="stat-value">${avg.toFixed(2)}</div></div>
+            <div class="stat-card"><h4>Sınav Sayısı</h4><div class="stat-value">${filtered.length}</div></div>
+        `;
+    }
+
+    function switchMainTab(tab) {
+        document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.main-tabs button').forEach(b => b.classList.remove('active'));
+        if(tab === 'analiz') {
+            document.getElementById('analizView').classList.add('active');
+            document.getElementById('tabAnalizBtn').classList.add('active');
+        } else {
+            document.getElementById('siralamaView').classList.add('active');
+            document.getElementById('tabSiralamaBtn').classList.add('active');
+            siralamaGuncelle();
+        }
+    }
+
+    function setBranch(key, btn) {
+        currentBranch = key;
+        document.querySelectorAll('#branchTabs button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        analizGuncelle();
+    }
+
+    function excelRaporAl() {
+        let csv = "\uFEFFÖğrenci;Sınav;Türkçe;İnkılap;Din;İngilizce;Matematik;Fen;Toplam Net;LGS Puanı\n";
+        dataStore.forEach(d => csv += `${d.name};${d.exam};${d.tur};${d.ink};${d.din};${d.ing};${d.mat};${d.fen};${d.total};${d.lgs}\n`);
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "LGS_Analiz_Raporu.csv";
+        link.click();
+    }
+</script>
+</body>
+</html>
