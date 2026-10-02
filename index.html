@@ -154,42 +154,39 @@
 
     async function verileriGetir() {
         document.getElementById('loadingMsg').style.display = 'block';
+        
         try {
-            // URL'yi güvenli bir şekilde inşa et (Mobil cihazlarda cache sorununu kesin çözer)
-            const url = new URL(SHEET_URL);
-            url.searchParams.append('t', Date.now());
+            let rawData = "";
+            const directUrl = SHEET_URL + '&t=' + new Date().getTime();
 
-            // Fetch işlemi (Mobil uyumluluk için cache: 'no-store' ve Accept başlığı eklendi)
-            const response = await fetch(url.toString(), {
-                method: 'GET',
-                cache: 'no-store',
-                headers: {
-                    'Accept': 'text/csv, text/plain, */*'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error("Sunucuya ulaşılamadı. Kod: " + response.status);
+            // Adım 1: Tarayıcıları kışkırtmamak için en sade haliyle bağlanmayı dene
+            try {
+                const response = await fetch(directUrl);
+                if (!response.ok) throw new Error("Doğrudan bağlantı reddedildi.");
+                rawData = await response.text();
+            } catch (err) {
+                // Adım 2: Telefonda CORS (Güvenlik) engeline takıldıysak "Proxy" (Köprü) üzerinden bağlan
+                console.warn("Doğrudan fetch engellendi, Proxy devrede...");
+                const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(directUrl);
+                const proxyResponse = await fetch(proxyUrl);
+                if (!proxyResponse.ok) throw new Error("Alternatif proxy bağlantısı da sağlanamadı.");
+                rawData = await proxyResponse.text();
             }
-
-            const rawData = await response.text();
             
             // Satırları temizle
             const rows = rawData.split(/\r?\n/).filter(r => r.trim().length > 0);
-            if (rows.length < 2) throw new Error("Tabloda yeterli veri yok.");
+            if (rows.length < 2) throw new Error("Tabloda okunabilir yeterli veri bulunamadı.");
 
             const separator = rows[0].includes(';') ? ';' : ',';
-            
             dataStore = [];
             
-            // Başlık satırını atlayarak (i=1) döngüye başla
+            // Başlık satırını atlayarak döngüye başla
             for(let i = 1; i < rows.length; i++) {
                 let rowStr = rows[i];
                 let cols = [];
                 let inQuotes = false;
                 let currentVal = '';
                 
-                // Virgül ve tırnak karmaşasını çözen özel parser
                 for (let char of rowStr) {
                     if (char === '"') {
                         inQuotes = !inQuotes;
@@ -202,17 +199,14 @@
                 }
                 cols.push(currentVal.trim());
 
-                // Eğer satırda yeterli sütun yoksa (A'dan I'ya kadar en az 9 sütun) atla
                 if(cols.length < 9) continue;
 
-                // Tablodaki sayıyı güvenli şekilde ondalık formata çevirir (undefined/null hatalarını engeller)
                 const parseNum = (val) => {
                     if (val === undefined || val === null || val === '') return 0;
                     let num = parseFloat(String(val).replace(',', '.'));
                     return isNaN(num) ? 0 : num;
                 };
 
-                // A: Ad (0), B: Sınav (1), C: Tür (2), D: İnk (3), E: Din (4), F: İng (5), G: Mat (6), H: Fen (7), I: LGS (8)
                 const tur = parseNum(cols[2]);
                 const ink = parseNum(cols[3]);
                 const din = parseNum(cols[4]);
@@ -227,22 +221,23 @@
                     tur: tur, ink: ink, din: din,
                     ing: ing, mat: mat, fen: fen,
                     lgs: lgs,
-                    total: tur + ink + din + ing + mat + fen // Toplamı script kendisi net hesaplıyor
+                    total: tur + ink + din + ing + mat + fen
                 });
             }
 
-            if (dataStore.length === 0) alert("Uyarı: Okunabilir veri bulunamadı. Lütfen E-Tablo yapınızı kontrol edin.");
+            if (dataStore.length === 0) alert("Uyarı: Okunabilir veri bulunamadı.");
 
             dropdownlariGuncelle();
             analizGuncelle();
             
         } catch (e) { 
             console.error(e);
-            alert("Veri bağlantı hatası: " + e.message + "\nLütfen internet bağlantınızı kontrol edip tekrar deneyin."); 
+            alert("Veri bağlantı hatası: " + e.message + "\nÖnerilen Çözüm: Dosyayı telefona indirmek yerine bir web sunucusuna (ör: Netlify veya GitHub Pages) yüklemeyi deneyin."); 
         }
         document.getElementById('loadingMsg').style.display = 'none';
     }
 
+    // Kodun geri kalan (çizim, tablo vb.) fonksiyonları aynıdır
     function dropdownlariGuncelle() {
         const selectStd = document.getElementById('studentFilter');
         const uniqueNames = [...new Set(dataStore.map(d => d.name))].sort();
