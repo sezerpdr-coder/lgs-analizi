@@ -139,7 +139,8 @@
 </footer>
 
 <script>
-    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRv-FWL1F43vukW6ycM14PaawZ4vyN1_ZugKabHtsHabAgYCCYeVU6ohMEH79eFXYGTSK_TyhnYp6Qd/pub?output=csv';
+    const SHEET_KEY = '2PACX-1vRv-FWL1F43vukW6ycM14PaawZ4vyN1_ZugKabHtsHabAgYCCYeVU6ohMEH79eFXYGTSK_TyhnYp6Qd';
+    const SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/e/${SHEET_KEY}/pub?output=csv`;
     
     let dataStore = [];
     let myChart;
@@ -154,102 +155,193 @@
 
     async function verileriGetir() {
         document.getElementById('loadingMsg').style.display = 'block';
-        
-        let rawData = "";
-        
-        // Mobil bağlantı sorunlarını aşmak için alternatif sunucu listesi (Waterfall)
-        const sources = [
-            SHEET_URL,
-            'https://corsproxy.io/?' + encodeURIComponent(SHEET_URL),
-            'https://api.allorigins.win/raw?url=' + encodeURIComponent(SHEET_URL),
-            'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(SHEET_URL)
-        ];
-
-        let success = false;
-
-        for (let url of sources) {
-            try {
-                const response = await fetch(url, { cache: "no-store" });
-                if (response.ok) {
-                    let text = await response.text();
-                    if (text && text.length > 50 && (text.includes(',') || text.includes(';'))) {
-                        rawData = text;
-                        success = true;
-                        break;
-                    }
-                }
-            } catch (err) {
-                console.warn("Proxy denemesi atlandı:", url);
-            }
-        }
-
-        if (!success || !rawData) {
-            document.getElementById('loadingMsg').style.display = 'none';
-            alert("Veri bağlantısı sağlanamadı!\n\nİpucu: Dosyayı telefonda doğrudan indirilenler klasöründen (file://) açıyorsanız tarayıcı güvenlik kısıtlamalarına takılabilir. Dosyayı GitHub Pages veya Netlify gibi ücretsiz bir servise yükleyip bağlantı adresi üzerinden açmanız önerilir.");
-            return;
-        }
+        dataStore = [];
 
         try {
-            const rows = rawData.split(/\r?\n/).filter(r => r.trim().length > 0);
-            if (rows.length < 2) throw new Error("Tabloda okunabilir yeterli veri bulunamadı.");
-
-            const separator = rows[0].includes(';') ? ';' : ',';
-            dataStore = [];
-            
-            for(let i = 1; i < rows.length; i++) {
-                let rowStr = rows[i];
-                let cols = [];
-                let inQuotes = false;
-                let currentVal = '';
-                
-                for (let char of rowStr) {
-                    if (char === '"') {
-                        inQuotes = !inQuotes;
-                    } else if (char === separator && !inQuotes) {
-                        cols.push(currentVal.trim());
-                        currentVal = '';
-                    } else {
-                        currentVal += char;
-                    }
-                }
-                cols.push(currentVal.trim());
-
-                if(cols.length < 9) continue;
-
-                const parseNum = (val) => {
-                    if (val === undefined || val === null || val === '') return 0;
-                    let num = parseFloat(String(val).replace(',', '.'));
-                    return isNaN(num) ? 0 : num;
-                };
-
-                const tur = parseNum(cols[2]);
-                const ink = parseNum(cols[3]);
-                const din = parseNum(cols[4]);
-                const ing = parseNum(cols[5]);
-                const mat = parseNum(cols[6]);
-                const fen = parseNum(cols[7]);
-                const lgs = parseNum(cols[8]);
-
-                dataStore.push({
-                    name: cols[0],
-                    exam: cols[1],
-                    tur: tur, ink: ink, din: din,
-                    ing: ing, mat: mat, fen: fen,
-                    lgs: lgs,
-                    total: tur + ink + din + ing + mat + fen
-                });
+            // YÖNTEM 1: JSONP (Mobil tarayıcılar ve hücresel veride CORS engeline takılmaz)
+            try {
+                dataStore = await verileriGetirJSONP();
+            } catch (jsonpErr) {
+                console.warn("JSONP yöntemi denendi, CSV yedek yönteme geçiliyor...", jsonpErr);
             }
 
-            if (dataStore.length === 0) alert("Uyarı: Okunabilir veri bulunamadı.");
+            // YÖNTEM 2: Alternatif CSV Bağlantıları (Yedek)
+            if (!dataStore || dataStore.length === 0) {
+                dataStore = await verileriGetirCSV();
+            }
+
+            if (!dataStore || dataStore.length === 0) {
+                throw new Error("Tablo verisi okunamadı.");
+            }
 
             dropdownlariGuncelle();
             analizGuncelle();
             
         } catch (e) { 
             console.error(e);
-            alert("Veri işleme hatası: " + e.message); 
+            alert("Veri bağlantı hatası: Google e-Tablo verilerine erişilemedi. Lütfen internet bağlantınızı kontrol edip tekrar deneyin."); 
+        } finally {
+            document.getElementById('loadingMsg').style.display = 'none';
         }
-        document.getElementById('loadingMsg').style.display = 'none';
+    }
+
+    // Mobil uyumlu JSONP Veri Çekme Motoru
+    function verileriGetirJSONP() {
+        return new Promise((resolve, reject) => {
+            const callbackName = 'gvizCallback_' + Math.floor(Math.random() * 1000000);
+            
+            const timeout = setTimeout(() => {
+                cleanup();
+                reject(new Error("Zaman aşımı"));
+            }, 8000);
+
+            function cleanup() {
+                clearTimeout(timeout);
+                delete window[callbackName];
+                const scriptEl = document.getElementById(callbackName);
+                if (scriptEl && scriptEl.parentNode) scriptEl.parentNode.removeChild(scriptEl);
+            }
+
+            window[callbackName] = function(json) {
+                cleanup();
+                if (!json || !json.table || !json.table.rows) {
+                    reject(new Error("Geçersiz veri formatı"));
+                    return;
+                }
+
+                const parsed = [];
+                const rows = json.table.rows;
+
+                rows.forEach(r => {
+                    if (!r || !r.c) return;
+                    
+                    const getVal = (idx) => {
+                        if (!r.c[idx]) return '';
+                        return r.c[idx].v !== null && r.c[idx].v !== undefined ? r.c[idx].v : '';
+                    };
+
+                    const name = String(getVal(0)).trim();
+                    const exam = String(getVal(1)).trim();
+
+                    if (!name || !exam) return;
+                    if (name.toLowerCase().includes('ad') && exam.toLowerCase().includes('sınav')) return;
+
+                    const parseNum = (val) => {
+                        if (val === undefined || val === null || val === '') return 0;
+                        let num = parseFloat(String(val).replace(',', '.'));
+                        return isNaN(num) ? 0 : num;
+                    };
+
+                    const tur = parseNum(getVal(2));
+                    const ink = parseNum(getVal(3));
+                    const din = parseNum(getVal(4));
+                    const ing = parseNum(getVal(5));
+                    const mat = parseNum(getVal(6));
+                    const fen = parseNum(getVal(7));
+                    const lgs = parseNum(getVal(8));
+
+                    parsed.push({
+                        name: name,
+                        exam: exam,
+                        tur: tur, ink: ink, din: din,
+                        ing: ing, mat: mat, fen: fen,
+                        lgs: lgs,
+                        total: tur + ink + din + ing + mat + fen
+                    });
+                });
+
+                resolve(parsed);
+            };
+
+            const script = document.createElement('script');
+            script.id = callbackName;
+            script.src = `https://docs.google.com/spreadsheets/d/e/${SHEET_KEY}/gviz/tq?tqx=responseHandler:${callbackName}&_=` + Date.now();
+            script.onerror = function() {
+                cleanup();
+                reject(new Error("Script yükleme hatası"));
+            };
+
+            document.body.appendChild(script);
+        });
+    }
+
+    // Yedek CSV Motoru
+    async function verileriGetirCSV() {
+        const sources = [
+            SHEET_CSV_URL,
+            'https://corsproxy.io/?' + encodeURIComponent(SHEET_CSV_URL),
+            'https://api.allorigins.win/raw?url=' + encodeURIComponent(SHEET_CSV_URL)
+        ];
+
+        let rawData = "";
+        for (let url of sources) {
+            try {
+                const response = await fetch(url, { cache: "no-store" });
+                if (response.ok) {
+                    let text = await response.text();
+                    if (text && text.length > 50) {
+                        rawData = text;
+                        break;
+                    }
+                }
+            } catch (err) {
+                console.warn("CSV denemesi atlandı:", url);
+            }
+        }
+
+        if (!rawData) return [];
+
+        const rows = rawData.split(/\r?\n/).filter(r => r.trim().length > 0);
+        if (rows.length < 2) return [];
+
+        const separator = rows[0].includes(';') ? ';' : ',';
+        const parsed = [];
+
+        for(let i = 1; i < rows.length; i++) {
+            let rowStr = rows[i];
+            let cols = [];
+            let inQuotes = false;
+            let currentVal = '';
+            
+            for (let char of rowStr) {
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === separator && !inQuotes) {
+                    cols.push(currentVal.trim());
+                    currentVal = '';
+                } else {
+                    currentVal += char;
+                }
+            }
+            cols.push(currentVal.trim());
+
+            if(cols.length < 9) continue;
+
+            const parseNum = (val) => {
+                if (val === undefined || val === null || val === '') return 0;
+                let num = parseFloat(String(val).replace(',', '.'));
+                return isNaN(num) ? 0 : num;
+            };
+
+            const tur = parseNum(cols[2]);
+            const ink = parseNum(cols[3]);
+            const din = parseNum(cols[4]);
+            const ing = parseNum(cols[5]);
+            const mat = parseNum(cols[6]);
+            const fen = parseNum(cols[7]);
+            const lgs = parseNum(cols[8]);
+
+            parsed.push({
+                name: cols[0],
+                exam: cols[1],
+                tur: tur, ink: ink, din: din,
+                ing: ing, mat: mat, fen: fen,
+                lgs: lgs,
+                total: tur + ink + din + ing + mat + fen
+            });
+        }
+
+        return parsed;
     }
 
     function dropdownlariGuncelle() {
