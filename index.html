@@ -155,32 +155,47 @@
     async function verileriGetir() {
         document.getElementById('loadingMsg').style.display = 'block';
         
-        try {
-            let rawData = "";
-            const directUrl = SHEET_URL + '&t=' + new Date().getTime();
+        let rawData = "";
+        
+        // Mobil bağlantı sorunlarını aşmak için alternatif sunucu listesi (Waterfall)
+        const sources = [
+            SHEET_URL,
+            'https://corsproxy.io/?' + encodeURIComponent(SHEET_URL),
+            'https://api.allorigins.win/raw?url=' + encodeURIComponent(SHEET_URL),
+            'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(SHEET_URL)
+        ];
 
-            // Adım 1: Tarayıcıları kışkırtmamak için en sade haliyle bağlanmayı dene
+        let success = false;
+
+        for (let url of sources) {
             try {
-                const response = await fetch(directUrl);
-                if (!response.ok) throw new Error("Doğrudan bağlantı reddedildi.");
-                rawData = await response.text();
+                const response = await fetch(url, { cache: "no-store" });
+                if (response.ok) {
+                    let text = await response.text();
+                    if (text && text.length > 50 && (text.includes(',') || text.includes(';'))) {
+                        rawData = text;
+                        success = true;
+                        break;
+                    }
+                }
             } catch (err) {
-                // Adım 2: Telefonda CORS (Güvenlik) engeline takıldıysak "Proxy" (Köprü) üzerinden bağlan
-                console.warn("Doğrudan fetch engellendi, Proxy devrede...");
-                const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(directUrl);
-                const proxyResponse = await fetch(proxyUrl);
-                if (!proxyResponse.ok) throw new Error("Alternatif proxy bağlantısı da sağlanamadı.");
-                rawData = await proxyResponse.text();
+                console.warn("Proxy denemesi atlandı:", url);
             }
-            
-            // Satırları temizle
+        }
+
+        if (!success || !rawData) {
+            document.getElementById('loadingMsg').style.display = 'none';
+            alert("Veri bağlantısı sağlanamadı!\n\nİpucu: Dosyayı telefonda doğrudan indirilenler klasöründen (file://) açıyorsanız tarayıcı güvenlik kısıtlamalarına takılabilir. Dosyayı GitHub Pages veya Netlify gibi ücretsiz bir servise yükleyip bağlantı adresi üzerinden açmanız önerilir.");
+            return;
+        }
+
+        try {
             const rows = rawData.split(/\r?\n/).filter(r => r.trim().length > 0);
             if (rows.length < 2) throw new Error("Tabloda okunabilir yeterli veri bulunamadı.");
 
             const separator = rows[0].includes(';') ? ';' : ',';
             dataStore = [];
             
-            // Başlık satırını atlayarak döngüye başla
             for(let i = 1; i < rows.length; i++) {
                 let rowStr = rows[i];
                 let cols = [];
@@ -232,12 +247,11 @@
             
         } catch (e) { 
             console.error(e);
-            alert("Veri bağlantı hatası: " + e.message + "\nÖnerilen Çözüm: Dosyayı telefona indirmek yerine bir web sunucusuna (ör: Netlify veya GitHub Pages) yüklemeyi deneyin."); 
+            alert("Veri işleme hatası: " + e.message); 
         }
         document.getElementById('loadingMsg').style.display = 'none';
     }
 
-    // Kodun geri kalan (çizim, tablo vb.) fonksiyonları aynıdır
     function dropdownlariGuncelle() {
         const selectStd = document.getElementById('studentFilter');
         const uniqueNames = [...new Set(dataStore.map(d => d.name))].sort();
