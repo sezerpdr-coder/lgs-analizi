@@ -155,11 +155,29 @@
     async function verileriGetir() {
         document.getElementById('loadingMsg').style.display = 'block';
         try {
-            const response = await fetch(SHEET_URL + '&cache=' + new Date().getTime());
+            // URL'yi güvenli bir şekilde inşa et (Mobil cihazlarda cache sorununu kesin çözer)
+            const url = new URL(SHEET_URL);
+            url.searchParams.append('t', Date.now());
+
+            // Fetch işlemi (Mobil uyumluluk için cache: 'no-store' ve Accept başlığı eklendi)
+            const response = await fetch(url.toString(), {
+                method: 'GET',
+                cache: 'no-store',
+                headers: {
+                    'Accept': 'text/csv, text/plain, */*'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error("Sunucuya ulaşılamadı. Kod: " + response.status);
+            }
+
             const rawData = await response.text();
             
             // Satırları temizle
             const rows = rawData.split(/\r?\n/).filter(r => r.trim().length > 0);
+            if (rows.length < 2) throw new Error("Tabloda yeterli veri yok.");
+
             const separator = rows[0].includes(';') ? ';' : ',';
             
             dataStore = [];
@@ -187,10 +205,10 @@
                 // Eğer satırda yeterli sütun yoksa (A'dan I'ya kadar en az 9 sütun) atla
                 if(cols.length < 9) continue;
 
-                // Tablodaki sayıyı güvenli şekilde ondalık formata çevirir (15,50 -> 15.50)
+                // Tablodaki sayıyı güvenli şekilde ondalık formata çevirir (undefined/null hatalarını engeller)
                 const parseNum = (val) => {
-                    if (!val) return 0;
-                    let num = parseFloat(val.toString().replace(',', '.'));
+                    if (val === undefined || val === null || val === '') return 0;
+                    let num = parseFloat(String(val).replace(',', '.'));
                     return isNaN(num) ? 0 : num;
                 };
 
@@ -220,7 +238,7 @@
             
         } catch (e) { 
             console.error(e);
-            alert("Veri bağlantı hatası: " + e.message); 
+            alert("Veri bağlantı hatası: " + e.message + "\nLütfen internet bağlantınızı kontrol edip tekrar deneyin."); 
         }
         document.getElementById('loadingMsg').style.display = 'none';
     }
