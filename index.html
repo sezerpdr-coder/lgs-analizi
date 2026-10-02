@@ -5,77 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
     <title>Öğrenci Gelişim Analiz Paneli PRO</title>
+    
+    <!-- PRO Kütüphaneler -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; display: flex; flex-direction: column; min-height: 100vh; }
         .container { max-width: 1300px; margin: auto; display: grid; grid-template-columns: 300px 1fr; gap: 20px; flex: 1; width: 100%; box-sizing: border-box; }
-        header { grid-column: 1 / -1; background: #2c3e50; color: white; padding: 20px; border-radius: 10px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        header h1 { margin: 0; font-size: 28px; }
-        header h2 { margin: 5px 0 0 0; font-size: 18px; font-weight: 300; color: #ecf0f1; opacity: 0.9; }
-        .sidebar, .main-content { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        select { width: 100%; padding: 10px; margin: 5px 0 15px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; font-size: 14px; }
-        button { width: 100%; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-bottom: 10px; transition: 0.3s; }
-        .btn-refresh { background: #27ae60; color: white; }
-        .btn-report { background: #8e44ad; color: white; }
-        .info-box { background: #e8f4fd; padding: 15px; border-radius: 8px; border-left: 5px solid #3498db; font-size: 13px; color: #333; margin-bottom: 20px; line-height: 1.5; }
+        header { grid-column: 1 / -1; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 25px; border-radius: 10px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+        header h1 { margin: 0; font-size: 28px; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); }
+        header h2 { margin: 8px 0 0 0; font-size: 16px; font-weight: 400; color: #ecf0f1; opacity: 0.9; }
+        .sidebar, .main-content { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        select { width: 100%; padding: 12px; margin: 5px 0 15px 0; border: 1px solid #dcdde1; border-radius: 6px; box-sizing: border-box; font-size: 14px; background-color: #fbfbfb; transition: 0.3s; }
+        select:focus { border-color: #3498db; outline: none; box-shadow: 0 0 5px rgba(52,152,219,0.3); }
+        button { width: 100%; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 10px; transition: all 0.2s; font-size: 14px; }
+        button:active { transform: scale(0.98); }
+        .btn-refresh { background: #27ae60; color: white; box-shadow: 0 3px 6px rgba(39,174,96,0.2); }
+        .btn-refresh:hover { background: #219a52; }
+        .btn-report { background: #8e44ad; color: white; box-shadow: 0 3px 6px rgba(142,68,173,0.2); }
+        .btn-report:hover { background: #732d91; }
+        .info-box { background: #e8f4fd; padding: 15px; border-radius: 8px; border-left: 5px solid #3498db; font-size: 13px; color: #2c3e50; margin-bottom: 20px; line-height: 1.6; }
         .main-tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .main-tabs button { background: #ecf0f1; color: #2c3e50; border-radius: 5px; padding: 10px; flex: 1; margin: 0; min-width: 120px; }
+        .main-tabs button { background: #ecf0f1; color: #2c3e50; border-radius: 6px; padding: 12px; flex: 1; margin: 0; min-width: 120px; box-shadow: none; }
         .main-tabs button.active { background: #2c3e50; color: white; }
-        .branch-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 15px; }
-        .branch-tabs button { width: 100%; padding: 8px 2px; font-size: 12px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 5px; color: #555; margin: 0; }
+        .branch-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
+        .branch-tabs button { width: 100%; padding: 10px 2px; font-size: 12px; background: #f8f9fa; border: 1px solid #dcdde1; border-radius: 6px; color: #555; margin: 0; box-shadow: none; }
         .branch-tabs button.active { background: #3498db; color: white; border-color: #3498db; }
         .stats-container { display: flex; gap: 15px; margin-top: 15px; min-height: 80px; flex-wrap: wrap; }
-        .stat-card { flex: 1 1 100px; background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #eee; min-width: 90px; }
-        .stat-card h4 { margin: 0 0 10px 0; font-size: 13px; color: #7f8c8d; }
-        .stat-value { font-size: 19px; font-weight: bold; color: #2c3e50; }
-        .stat-card.highlight { background: #e8f4fd; border-color: #3498db; }
-        .table-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 20px; border-radius: 5px; border: 1px solid #eee; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 800px; }
-        th, td { border: 1px solid #eee; padding: 12px 8px; text-align: center; }
-        th { background: #f8f9fa; color: #2c3e50; font-weight: bold; }
-        .chart-box { margin-top: 10px; height: 350px; }
-        .filter-section { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee; }
-        .view-section { display: none; }
+        .stat-card { flex: 1 1 100px; background: #fff; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #eee; min-width: 90px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .stat-card h4 { margin: 0 0 10px 0; font-size: 12px; color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-value { font-size: 22px; font-weight: 800; color: #2c3e50; }
+        .stat-card.highlight { background: #f0f7ff; border-color: #cce0ff; }
+        .table-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 20px; border-radius: 8px; border: 1px solid #eee; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 800px; background: white; }
+        th, td { border-bottom: 1px solid #eee; padding: 14px 10px; text-align: center; }
+        th { background: #f8f9fa; color: #2c3e50; font-weight: 700; text-transform: uppercase; font-size: 12px; }
+        tr:hover { background-color: #fdfdfd; }
+        .chart-box { margin-top: 15px; height: 380px; width: 100%; background: white; padding: 10px; border-radius: 8px; border: 1px solid #eee; box-sizing: border-box; }
+        .filter-section { background: #f8f9fa; padding: 18px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee; }
+        .view-section { display: none; animation: fadeIn 0.4s ease; }
         .view-section.active { display: block; }
-        .loading-overlay { display: none; text-align: center; padding: 40px; font-weight: bold; color: #2980b9; }
-        footer { text-align: center; padding: 25px; margin-top: auto; font-size: 12px; color: #7f8c8d; border-top: 1px solid #ddd; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 25px; margin-top: auto; font-size: 12px; color: #95a5a6; border-top: 1px solid #eaeaea; }
         @media (max-width: 768px) {
             .container { grid-template-columns: 1fr; padding: 10px; }
             .sidebar { order: 2; }
             .main-content { order: 1; }
             .branch-tabs { grid-template-columns: repeat(2, 1fr); }
-            .stat-value { font-size: 16px; }
+            .stat-value { font-size: 18px; }
+            .chart-box { height: 300px; }
         }
     </style>
 </head>
 <body>
 
 <header>
-    <h1> 🇹🇷 Öğrenci Gelişim & LGS Analiz Sistemi</h1>
-    <h2>Kıbrıs Ortaokulu Rehberlik Servisi</h2>
+    <h1>🇹🇷 LGS Gelişim & Analiz Paneli <span style="background:#e74c3c; padding:2px 8px; border-radius:4px; font-size:14px; vertical-align:middle;">PRO</span></h1>
+    <h2>Kıbrıs Ortaokulu Psikolojik Danışmanlık ve Rehberlik Servisi</h2>
 </header>
 
 <div class="container">
     <div class="sidebar">
-        <h3>🔄 Veri Yönetimi</h3>
+        <h3><span style="font-size:20px">🔄</span> Veri Yönetimi</h3>
         <div class="info-box">
-            <strong>Sütun Düzeni:</strong> A: Ad Soyad, B: Sınav, C: Türkçe, D: İnkılap, E: Din, F: İngilizce, G: Mat, H: Fen, I: LGS Puanı. (Toplam net sistem tarafından C-H toplanarak bulunur).
+            <strong>Sütun Düzeni:</strong> A: Ad Soyad, B: Sınav, C: Türkçe, D: İnkılap, E: Din, F: İngilizce, G: Mat, H: Fen, I: LGS Puanı. (Netler otomatik toplanır).
         </div>
         <button class="btn-refresh" onclick="verileriGetir()">🔄 Verileri Şimdi Yenile</button>
-        <button class="btn-report" onclick="excelRaporAl()">📊 Veriyi CSV Olarak İndir</button>
+        <button class="btn-report" onclick="excelRaporAl()">📊 Excel / CSV İndir</button>
     </div>
 
     <div class="main-content">
         <div class="main-tabs">
-            <button class="active" id="tabAnalizBtn" onclick="switchMainTab('analiz')">📈 Bireysel Analiz</button>
-            <button id="tabSiralamaBtn" onclick="switchMainTab('siralama')">🏆 Genel Sıralama</button>
+            <button class="active" id="tabAnalizBtn" onclick="switchMainTab('analiz')">📈 Bireysel Gelişim Grafiği</button>
+            <button id="tabSiralamaBtn" onclick="switchMainTab('siralama')">🏆 Genel ve Sınav Sıralaması</button>
         </div>
-
-        <div id="loadingMsg" class="loading-overlay">⏳ Veriler tablodan çekiliyor, lütfen bekleyin...</div>
 
         <div id="analizView" class="view-section active">
             <div class="filter-section">
-                <label><strong>🔍 Öğrenci Seçin:</strong></label>
+                <label style="display:block; margin-bottom:8px; color:#2c3e50;"><strong>🔍 Öğrenci Seçin:</strong></label>
                 <select id="studentFilter" onchange="analizGuncelle()"></select>
             </div>
             
@@ -96,7 +105,7 @@
             <div class="table-container">
                 <table id="resTable">
                     <thead>
-                        <tr><th>Sınav</th><th>TÜR</th><th>İNK</th><th>DİN</th><th>İNG</th><th>MAT</th><th>FEN</th><th>TOPLAM NET</th><th>LGS PUANI</th></tr>
+                        <tr><th>Sınav Türü</th><th>TÜR</th><th>İNK</th><th>DİN</th><th>İNG</th><th>MAT</th><th>FEN</th><th>TOPLAM NET</th><th>LGS PUANI</th></tr>
                     </thead>
                     <tbody></tbody>
                 </table>
@@ -106,17 +115,23 @@
         <div id="siralamaView" class="view-section">
             <div class="filter-section">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <select id="examFilter" onchange="siralamaGuncelle()"></select>
-                    <select id="sortFilter" onchange="siralamaGuncelle()">
-                        <option value="lgs">Sıralama: LGS Puanı</option>
-                        <option value="total">Sıralama: Toplam Net</option>
-                        <option value="tur">Sıralama: Türkçe</option>
-                        <option value="ink">Sıralama: İnkılap</option>
-                        <option value="din">Sıralama: Din K.</option>
-                        <option value="ing">Sıralama: İngilizce</option>
-                        <option value="mat">Sıralama: Matematik</option>
-                        <option value="fen">Sıralama: Fen Bilimleri</option>
-                    </select>
+                    <div>
+                        <label style="display:block; margin-bottom:8px; color:#2c3e50;"><strong>📅 Sınav Seçimi:</strong></label>
+                        <select id="examFilter" onchange="siralamaGuncelle()"></select>
+                    </div>
+                    <div>
+                        <label style="display:block; margin-bottom:8px; color:#2c3e50;"><strong>📊 Sıralama Ölçütü:</strong></label>
+                        <select id="sortFilter" onchange="siralamaGuncelle()">
+                            <option value="lgs">Sırala: LGS Puanı</option>
+                            <option value="total">Sırala: Toplam Net</option>
+                            <option value="tur">Sırala: Türkçe Neti</option>
+                            <option value="ink">Sırala: İnkılap Neti</option>
+                            <option value="din">Sırala: Din K. Neti</option>
+                            <option value="ing">Sırala: İngilizce Neti</option>
+                            <option value="mat">Sırala: Matematik Neti</option>
+                            <option value="fen">Sırala: Fen Bilimleri Neti</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -125,7 +140,7 @@
             <div class="table-container">
                 <table id="rankTable">
                     <thead>
-                        <tr><th>Sıra</th><th>Öğrenci Adı</th><th>TÜR</th><th>İNK</th><th>DİN</th><th>İNG</th><th>MAT</th><th>FEN</th><th>TOPLAM NET</th><th>LGS PUANI</th></tr>
+                        <tr><th>Sıra</th><th>Öğrenci Adı Soyadı</th><th>TÜR</th><th>İNK</th><th>DİN</th><th>İNG</th><th>MAT</th><th>FEN</th><th>TOP. NET</th><th>LGS PUAN</th></tr>
                     </thead>
                     <tbody></tbody>
                 </table>
@@ -135,187 +150,103 @@
 </div>
 
 <footer>
-    Kıbrıs Ortaokulu için Okul Psikolojik Danışmanı Sezer TEKİN tarafından tasarlanmıştır.
+    Kıbrıs Ortaokulu için Okul Psikolojik Danışmanı Sezer TEKİN tarafından tasarlanmıştır. | Sistem Sürümü: PRO v3.0
 </footer>
 
 <script>
-    const SHEET_KEY = '2PACX-1vRv-FWL1F43vukW6ycM14PaawZ4vyN1_ZugKabHtsHabAgYCCYeVU6ohMEH79eFXYGTSK_TyhnYp6Qd';
-    const SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/e/2PACX-1vRv-FWL1F43vukW6ycM14PaawZ4vyN1_ZugKabHtsHabAgYCCYeVU6ohMEH79eFXYGTSK_TyhnYp6Qd/pub?output=csv`;
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRv-FWL1F43vukW6ycM14PaawZ4vyN1_ZugKabHtsHabAgYCCYeVU6ohMEH79eFXYGTSK_TyhnYp6Qd/pub?output=csv';
     
     let dataStore = [];
     let myChart;
     let currentBranch = 'total';
     const branchNames = { 
-        total: 'Toplam Net', lgs: 'LGS Puanı', tur: 'Türkçe', 
-        ink: 'İnkılap', din: 'Din K.', ing: 'İngilizce', 
-        mat: 'Matematik', fen: 'Fen Bilimleri' 
+        total: 'Toplam Net', lgs: 'LGS Puanı', tur: 'Türkçe Neti', 
+        ink: 'İnkılap Neti', din: 'Din K. Neti', ing: 'İngilizce Neti', 
+        mat: 'Matematik Neti', fen: 'Fen Bilimleri Neti' 
     };
 
     window.addEventListener('DOMContentLoaded', verileriGetir);
 
+    // PRO Seviye Veri Çekme Motoru (Yedekli ve Hata Toleranslı)
     async function verileriGetir() {
-        document.getElementById('loadingMsg').style.display = 'block';
-        dataStore = [];
+        Swal.fire({
+            title: 'Veriler Analiz Ediliyor',
+            html: 'Google Sheets ile güvenli bağlantı kuruluyor...',
+            allowEscapeKey: false,
+            allowOutsideClick: false,
+            didOpen: () => { Swal.showLoading(); }
+        });
 
+        let csvText = null;
+        let finalError = "";
+        
+        // Cache kırıcı (Mobil Safari'nin eski veriyi dayatmasını engeller, Preflight tetiklemez)
+        const noCacheUrl = SHEET_URL + '&rand=' + Math.random().toString(36).substring(7);
+
+        // 1. Adım: Doğrudan Bağlantı Denemesi
         try {
-            // YÖNTEM 1: JSONP (Mobil tarayıcılar ve hücresel veride CORS engeline takılmaz)
+            const res = await fetch(noCacheUrl);
+            if(res.ok) csvText = await res.text();
+            else throw new Error("Doğrudan bağlantı HTTP " + res.status);
+        } catch (e1) {
+            console.warn("Doğrudan fetch başarısız, Proxy 1 devrede...", e1);
+            
+            // 2. Adım: AllOrigins Proxy (Eğer hücresel veri veya ITP doğrudan bağlantıyı engellerse)
             try {
-                dataStore = await verileriGetirJSONP();
-            } catch (jsonpErr) {
-                console.warn("JSONP yöntemi denendi, CSV yedek yönteme geçiliyor...", jsonpErr);
-            }
-
-            // YÖNTEM 2: Alternatif CSV Bağlantıları (Yedek)
-            if (!dataStore || dataStore.length === 0) {
-                dataStore = await verileriGetirCSV();
-            }
-
-            if (!dataStore || dataStore.length === 0) {
-                throw new Error("Tablo verisi okunamadı.");
-            }
-
-            dropdownlariGuncelle();
-            analizGuncelle();
-            
-        } catch (e) { 
-            console.error(e);
-            alert("Veri bağlantı hatası: Google e-Tablo verilerine erişilemedi. Lütfen internet bağlantınızı kontrol edip tekrar deneyin."); 
-        } finally {
-            document.getElementById('loadingMsg').style.display = 'none';
-        }
-    }
-
-    // Mobil uyumlu JSONP Veri Çekme Motoru
-    function verileriGetirJSONP() {
-        return new Promise((resolve, reject) => {
-            const callbackName = 'gvizCallback_' + Math.floor(Math.random() * 1000000);
-            
-            const timeout = setTimeout(() => {
-                cleanup();
-                reject(new Error("Zaman aşımı"));
-            }, 8000);
-
-            function cleanup() {
-                clearTimeout(timeout);
-                delete window[callbackName];
-                const scriptEl = document.getElementById(callbackName);
-                if (scriptEl && scriptEl.parentNode) scriptEl.parentNode.removeChild(scriptEl);
-            }
-
-            window[callbackName] = function(json) {
-                cleanup();
-                if (!json || !json.table || !json.table.rows) {
-                    reject(new Error("Geçersiz veri formatı"));
-                    return;
+                const proxy1 = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(noCacheUrl);
+                const res2 = await fetch(proxy1);
+                if(res2.ok) csvText = await res2.text();
+                else throw new Error("Proxy 1 HTTP " + res2.status);
+            } catch (e2) {
+                console.warn("Proxy 1 başarısız, Proxy 2 devrede...", e2);
+                
+                // 3. Adım: CorsProxy (Son çare)
+                try {
+                    const proxy2 = 'https://corsproxy.io/?' + encodeURIComponent(noCacheUrl);
+                    const res3 = await fetch(proxy2);
+                    if(res3.ok) csvText = await res3.text();
+                    else throw new Error("Proxy 2 HTTP " + res3.status);
+                } catch (e3) {
+                    finalError = e3.message;
                 }
+            }
+        }
 
-                const parsed = [];
-                const rows = json.table.rows;
+        if (!csvText) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Bağlantı Hatası',
+                text: 'Mobil ağınız veya tarayıcınız veri çekilmesini engelliyor. Lütfen Wi-Fi ağına bağlanıp tekrar deneyin.',
+                footer: `<span style="font-size:11px; color:gray;">Teknik Detay: ${finalError}</span>`
+            });
+            return;
+        }
 
-                rows.forEach(r => {
-                    if (!r || !r.c) return;
-                    
-                    const getVal = (idx) => {
-                        if (!r.c[idx]) return '';
-                        return r.c[idx].v !== null && r.c[idx].v !== undefined ? r.c[idx].v : '';
-                    };
-
-                    const name = String(getVal(0)).trim();
-                    const exam = String(getVal(1)).trim();
-
-                    if (!name || !exam) return;
-                    if (name.toLowerCase().includes('ad') && exam.toLowerCase().includes('sınav')) return;
-
-                    const parseNum = (val) => {
-                        if (val === undefined || val === null || val === '') return 0;
-                        let num = parseFloat(String(val).replace(',', '.'));
-                        return isNaN(num) ? 0 : num;
-                    };
-
-                    const tur = parseNum(getVal(2));
-                    const ink = parseNum(getVal(3));
-                    const din = parseNum(getVal(4));
-                    const ing = parseNum(getVal(5));
-                    const mat = parseNum(getVal(6));
-                    const fen = parseNum(getVal(7));
-                    const lgs = parseNum(getVal(8));
-
-                    parsed.push({
-                        name: name,
-                        exam: exam,
-                        tur: tur, ink: ink, din: din,
-                        ing: ing, mat: mat, fen: fen,
-                        lgs: lgs,
-                        total: tur + ink + din + ing + mat + fen
-                    });
-                });
-
-                resolve(parsed);
-            };
-
-            const script = document.createElement('script');
-            script.id = callbackName;
-            script.src = `https://docs.google.com/spreadsheets/d/e/${SHEET_KEY}/gviz/tq?tqx=responseHandler:${callbackName}&_=` + Date.now();
-            script.onerror = function() {
-                cleanup();
-                reject(new Error("Script yükleme hatası"));
-            };
-
-            document.body.appendChild(script);
+        // PRO Seviye CSV Ayrıştırma (PapaParse - Bozuk virgülleri ve satırları otomatik tolere eder)
+        Papa.parse(csvText, {
+            header: false,
+            skipEmptyLines: true,
+            complete: function(results) {
+                isleyipKaydet(results.data);
+            },
+            error: function(err) {
+                Swal.fire('Veri Okuma Hatası', 'Google tablonuzdaki veriler bozuk: ' + err.message, 'error');
+            }
         });
     }
 
-    // Yedek CSV Motoru
-    async function verileriGetirCSV() {
-        const sources = [
-            SHEET_CSV_URL,
-            'https://corsproxy.io/?' + encodeURIComponent(SHEET_CSV_URL),
-            'https://api.allorigins.win/raw?url=' + encodeURIComponent(SHEET_CSV_URL)
-        ];
-
-        let rawData = "";
-        for (let url of sources) {
-            try {
-                const response = await fetch(url, { cache: "no-store" });
-                if (response.ok) {
-                    let text = await response.text();
-                    if (text && text.length > 50) {
-                        rawData = text;
-                        break;
-                    }
-                }
-            } catch (err) {
-                console.warn("CSV denemesi atlandı:", url);
-            }
+    function isleyipKaydet(rows) {
+        dataStore = [];
+        if (rows.length < 2) {
+            Swal.fire('Uyarı', 'Tabloda başlık dışında okunabilir veri bulunamadı.', 'warning');
+            return;
         }
 
-        if (!rawData) return [];
-
-        const rows = rawData.split(/\r?\n/).filter(r => r.trim().length > 0);
-        if (rows.length < 2) return [];
-
-        const separator = rows[0].includes(';') ? ';' : ',';
-        const parsed = [];
-
-        for(let i = 1; i < rows.length; i++) {
-            let rowStr = rows[i];
-            let cols = [];
-            let inQuotes = false;
-            let currentVal = '';
+        for (let i = 1; i < rows.length; i++) {
+            let cols = rows[i];
             
-            for (let char of rowStr) {
-                if (char === '"') {
-                    inQuotes = !inQuotes;
-                } else if (char === separator && !inQuotes) {
-                    cols.push(currentVal.trim());
-                    currentVal = '';
-                } else {
-                    currentVal += char;
-                }
-            }
-            cols.push(currentVal.trim());
-
-            if(cols.length < 9) continue;
+            // Eğer boş satırsa veya sadece 1-2 sütun doldurulmuşsa atla
+            if (!cols || cols.length < 2 || String(cols[0]).trim() === "") continue;
 
             const parseNum = (val) => {
                 if (val === undefined || val === null || val === '') return 0;
@@ -323,6 +254,10 @@
                 return isNaN(num) ? 0 : num;
             };
 
+            const name = String(cols[0]).trim();
+            const exam = String(cols[1]).trim();
+            
+            // Kolonlar eksikse hata vermesin, 0 kabul etsin (PRO Hata Toleransı)
             const tur = parseNum(cols[2]);
             const ink = parseNum(cols[3]);
             const din = parseNum(cols[4]);
@@ -331,29 +266,41 @@
             const fen = parseNum(cols[7]);
             const lgs = parseNum(cols[8]);
 
-            parsed.push({
-                name: cols[0],
-                exam: cols[1],
-                tur: tur, ink: ink, din: din,
-                ing: ing, mat: mat, fen: fen,
-                lgs: lgs,
+            dataStore.push({
+                name: name, exam: exam,
+                tur: tur, ink: ink, din: din, ing: ing, mat: mat, fen: fen, lgs: lgs,
                 total: tur + ink + din + ing + mat + fen
             });
         }
 
-        return parsed;
+        if (dataStore.length === 0) {
+            Swal.fire('Uyarı', 'Geçerli bir öğrenci verisi bulunamadı. Sütunları kontrol edin.', 'info');
+            return;
+        }
+
+        dropdownlariGuncelle();
+        analizGuncelle();
+        
+        // İşlem bittiğinde tatlı bir bildirim göster
+        Swal.fire({
+            icon: 'success',
+            title: 'Veriler Güncellendi',
+            text: `${dataStore.length} adet sınav kaydı başarıyla işlendi.`,
+            timer: 2000,
+            showConfirmButton: false
+        });
     }
 
     function dropdownlariGuncelle() {
         const selectStd = document.getElementById('studentFilter');
-        const uniqueNames = [...new Set(dataStore.map(d => d.name))].sort();
-        selectStd.innerHTML = '<option value="">-- Öğrenci Seçin --</option>' + 
+        const uniqueNames = [...new Set(dataStore.map(d => d.name))].sort(new Intl.Collator('tr').compare);
+        selectStd.innerHTML = '<option value="">-- Öğrenci Seçiniz --</option>' + 
             uniqueNames.map(n => `<option value="${n}">${n}</option>`).join('');
 
         const selectEx = document.getElementById('examFilter');
         const uniqueExams = [...new Set(dataStore.map(d => d.exam))];
-        selectEx.innerHTML = '<option value="">-- Sınav Seçin --</option>' + 
-            '<option value="GENEL_ORTALAMA" style="font-weight:bold; color: #e67e22;">🏆 Tüm Sınavların Genel Ortalaması</option>' +
+        selectEx.innerHTML = '<option value="">-- Sınav Seçiniz --</option>' + 
+            '<option value="GENEL_ORTALAMA" style="font-weight:bold; color: #d35400;">🏆 Tüm Sınavların Genel Ortalaması</option>' +
             uniqueExams.map(e => `<option value="${e}">${e}</option>`).join('');
     }
 
@@ -364,7 +311,7 @@
         const avgContainer = document.getElementById('examAveragesContainer');
         
         if(!exam) {
-            tbody.innerHTML = "<tr><td colspan='10'>Lütfen bir sınav belirleyin.</td></tr>";
+            tbody.innerHTML = "<tr><td colspan='10' style='padding:30px; color:#7f8c8d;'>Lütfen yukarıdan bir sınav seçin.</td></tr>";
             avgContainer.style.display = 'none';
             return;
         }
@@ -414,22 +361,22 @@
                 <div class="stat-card"><h4>İNG Ort.</h4><div class="stat-value">${f('ing')}</div></div>
                 <div class="stat-card"><h4>MAT Ort.</h4><div class="stat-value">${f('mat')}</div></div>
                 <div class="stat-card"><h4>FEN Ort.</h4><div class="stat-value">${f('fen')}</div></div>
-                <div class="stat-card highlight"><h4>Top. Net</h4><div class="stat-value" style="color:#2980b9;">${f('total')}</div></div>
-                <div class="stat-card highlight"><h4>LGS Puan</h4><div class="stat-value" style="color:#f39c12;">${f('lgs')}</div></div>
+                <div class="stat-card highlight"><h4>Top. Net Ort.</h4><div class="stat-value" style="color:#2980b9;">${f('total')}</div></div>
+                <div class="stat-card highlight"><h4>LGS Puan Ort.</h4><div class="stat-value" style="color:#e74c3c;">${f('lgs')}</div></div>
             `;
             avgContainer.style.display = 'flex';
         }
 
-        const hl = (key) => sortKey === key ? 'font-weight:bold;background:#fff9db' : '';
+        const hl = (key) => sortKey === key ? 'font-weight:bold; background-color:#fff8e1;' : '';
         tbody.innerHTML = displayData.map((d, i) => `
             <tr>
-                <td>${i+1}</td>
-                <td style="text-align:left; font-weight:500;">${d.name}</td>
+                <td><span style="background:${i<3 ? '#f39c12' : '#95a5a6'}; color:white; padding:3px 8px; border-radius:10px; font-size:11px;">${i+1}</span></td>
+                <td style="text-align:left; font-weight:600; color:#2c3e50;">${d.name}</td>
                 <td style="${hl('tur')}">${d.tur.toFixed(2)}</td><td style="${hl('ink')}">${d.ink.toFixed(2)}</td>
                 <td style="${hl('din')}">${d.din.toFixed(2)}</td><td style="${hl('ing')}">${d.ing.toFixed(2)}</td>
                 <td style="${hl('mat')}">${d.mat.toFixed(2)}</td><td style="${hl('fen')}">${d.fen.toFixed(2)}</td>
-                <td style="color:#2980b9; ${hl('total')}">${d.total.toFixed(2)}</td>
-                <td style="color:#e67e22; ${hl('lgs')}">${d.lgs.toFixed(2)}</td>
+                <td style="color:#2980b9; font-size:14px; ${hl('total')}">${d.total.toFixed(2)}</td>
+                <td style="color:#e74c3c; font-size:14px; font-weight:bold; ${hl('lgs')}">${d.lgs.toFixed(2)}</td>
             </tr>
         `).join('');
     }
@@ -441,41 +388,63 @@
         const stats = document.getElementById('statsContainer');
 
         if(!student) {
-            tbody.innerHTML = "<tr><td colspan='9'>Lütfen bir öğrenci seçin.</td></tr>";
+            tbody.innerHTML = "<tr><td colspan='9' style='padding:30px; color:#7f8c8d;'>Lütfen analizi görmek için listeden bir öğrenci seçin.</td></tr>";
             stats.innerHTML = ""; if(myChart) myChart.destroy(); return;
         }
 
         tbody.innerHTML = filtered.map(d => `
             <tr>
-                <td>${d.exam}</td><td>${d.tur.toFixed(2)}</td><td>${d.ink.toFixed(2)}</td><td>${d.din.toFixed(2)}</td>
+                <td style="font-weight:600; color:#34495e;">${d.exam}</td>
+                <td>${d.tur.toFixed(2)}</td><td>${d.ink.toFixed(2)}</td><td>${d.din.toFixed(2)}</td>
                 <td>${d.ing.toFixed(2)}</td><td>${d.mat.toFixed(2)}</td><td>${d.fen.toFixed(2)}</td>
-                <td style="font-weight:bold; color:#2980b9">${d.total.toFixed(2)}</td>
-                <td style="font-weight:bold; color:#f39c12">${d.lgs.toFixed(2)}</td>
+                <td style="font-weight:bold; color:#2980b9; font-size:14px;">${d.total.toFixed(2)}</td>
+                <td style="font-weight:bold; color:#e74c3c; font-size:14px;">${d.lgs.toFixed(2)}</td>
             </tr>
         `).join('');
 
         const ctx = document.getElementById('devChart').getContext('2d');
         if(myChart) myChart.destroy();
+        
+        // PRO Grafik Tasarımı
+        Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
         myChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: filtered.map(d => d.exam),
                 datasets: [{
-                    label: branchNames[currentBranch],
+                    label: `Bireysel Gelişim (${branchNames[currentBranch]})`,
                     data: filtered.map(d => d[currentBranch]),
-                    borderColor: '#3498db', backgroundColor: 'rgba(52, 152, 219, 0.1)',
-                    fill: true, tension: 0.3, pointRadius: 5
+                    borderColor: '#2980b9', 
+                    backgroundColor: 'rgba(41, 128, 185, 0.15)',
+                    borderWidth: 3,
+                    fill: true, 
+                    tension: 0.4, // Yumuşak eğriler
+                    pointBackgroundColor: '#e74c3c',
+                    pointBorderColor: '#fff',
+                    pointRadius: 6,
+                    pointHoverRadius: 8
                 }]
             },
-            options: { responsive: true, maintainAspectRatio: false }
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { font: { size: 14, weight: 'bold' } } },
+                    tooltip: { backgroundColor: 'rgba(44, 62, 80, 0.9)', titleFont: { size: 14 }, bodyFont: { size: 14, weight: 'bold' }, padding: 12 }
+                },
+                scales: {
+                    y: { grid: { color: '#f0f0f0' }, beginAtZero: false },
+                    x: { grid: { display: false } }
+                }
+            }
         });
 
         const last = filtered[filtered.length-1];
         const avg = filtered.reduce((s, d) => s + d[currentBranch], 0) / filtered.length;
         stats.innerHTML = `
-            <div class="stat-card"><h4>Son Net/Puan</h4><div class="stat-value">${last[currentBranch].toFixed(2)}</div></div>
-            <div class="stat-card"><h4>Öğrenci Ort.</h4><div class="stat-value">${avg.toFixed(2)}</div></div>
-            <div class="stat-card"><h4>Sınav Sayısı</h4><div class="stat-value">${filtered.length}</div></div>
+            <div class="stat-card"><h4>Son ${branchNames[currentBranch]}</h4><div class="stat-value" style="color:#27ae60">${last[currentBranch].toFixed(2)}</div></div>
+            <div class="stat-card"><h4>Öğrenci Ortalaması</h4><div class="stat-value" style="color:#2980b9">${avg.toFixed(2)}</div></div>
+            <div class="stat-card"><h4>Katıldığı Sınav</h4><div class="stat-value" style="color:#8e44ad">${filtered.length}</div></div>
         `;
     }
 
@@ -500,12 +469,18 @@
     }
 
     function excelRaporAl() {
-        let csv = "\uFEFFÖğrenci;Sınav;Türkçe;İnkılap;Din;İngilizce;Matematik;Fen;Toplam Net;LGS Puanı\n";
-        dataStore.forEach(d => csv += `${d.name};${d.exam};${d.tur};${d.ink};${d.din};${d.ing};${d.mat};${d.fen};${d.total};${d.lgs}\n`);
+        if(dataStore.length === 0) {
+            Swal.fire('Hata', 'İndirilecek veri yok.', 'error');
+            return;
+        }
+        let csv = "\uFEFFÖğrenci Adı Soyadı;Sınav Adı;Türkçe;İnkılap;Din Kültürü;İngilizce;Matematik;Fen Bilimleri;Toplam Net;LGS Puanı\n";
+        dataStore.forEach(d => {
+            csv += `"${d.name}";"${d.exam}";${d.tur};${d.ink};${d.din};${d.ing};${d.mat};${d.fen};${d.total};${d.lgs}\n`;
+        });
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = "LGS_Analiz_Raporu.csv";
+        link.download = `LGS_Analiz_${new Date().toLocaleDateString('tr-TR')}.csv`;
         link.click();
     }
 </script>
