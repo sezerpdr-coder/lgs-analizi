@@ -150,7 +150,7 @@
 </div>
 
 <footer>
-    Kıbrıs Ortaokulu için Okul Psikolojik Danışmanı Sezer TEKİN tarafından tasarlanmıştır. | Sistem Sürümü: PRO v3.0
+    Kıbrıs Ortaokulu için Okul Psikolojik Danışmanı Sezer TEKİN tarafından tasarlanmıştır. | Sistem Sürümü: PRO v3.1
 </footer>
 
 <script>
@@ -167,7 +167,7 @@
 
     window.addEventListener('DOMContentLoaded', verileriGetir);
 
-    // PRO Seviye Veri Çekme Motoru (Yedekli ve Hata Toleranslı)
+    // Proxy'den arındırılmış, native önbellek kırıcıya sahip doğrudan veri çekme fonksiyonu
     async function verileriGetir() {
         Swal.fire({
             title: 'Veriler Analiz Ediliyor',
@@ -177,62 +177,39 @@
             didOpen: () => { Swal.showLoading(); }
         });
 
-        let csvText = null;
-        let finalError = "";
-        
-        // Cache kırıcı (Mobil Safari'nin eski veriyi dayatmasını engeller, Preflight tetiklemez)
-        const noCacheUrl = SHEET_URL + '&rand=' + Math.random().toString(36).substring(7);
-
-        // 1. Adım: Doğrudan Bağlantı Denemesi
         try {
-            const res = await fetch(noCacheUrl);
-            if(res.ok) csvText = await res.text();
-            else throw new Error("Doğrudan bağlantı HTTP " + res.status);
-        } catch (e1) {
-            console.warn("Doğrudan fetch başarısız, Proxy 1 devrede...", e1);
-            
-            // 2. Adım: AllOrigins Proxy (Eğer hücresel veri veya ITP doğrudan bağlantıyı engellerse)
-            try {
-                const proxy1 = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(noCacheUrl);
-                const res2 = await fetch(proxy1);
-                if(res2.ok) csvText = await res2.text();
-                else throw new Error("Proxy 1 HTTP " + res2.status);
-            } catch (e2) {
-                console.warn("Proxy 1 başarısız, Proxy 2 devrede...", e2);
-                
-                // 3. Adım: CorsProxy (Son çare)
-                try {
-                    const proxy2 = 'https://corsproxy.io/?' + encodeURIComponent(noCacheUrl);
-                    const res3 = await fetch(proxy2);
-                    if(res3.ok) csvText = await res3.text();
-                    else throw new Error("Proxy 2 HTTP " + res3.status);
-                } catch (e3) {
-                    finalError = e3.message;
-                }
-            }
-        }
+            // URL sonuna parametre eklemek yerine tarayıcının native 'no-store' özelliğini kullanıyoruz.
+            // Bu sayede Google sunucuları linki manipüle edilmiş olarak algılamaz ve 403 hatası vermez.
+            const response = await fetch(SHEET_URL, {
+                method: 'GET',
+                cache: 'no-store' 
+            });
 
-        if (!csvText) {
+            if (!response.ok) {
+                throw new Error("HTTP " + response.status);
+            }
+
+            const csvText = await response.text();
+
+            Papa.parse(csvText, {
+                header: false,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    isleyipKaydet(results.data);
+                },
+                error: function(err) {
+                    Swal.fire('Veri Okuma Hatası', 'Google tablonuzdaki veriler bozuk: ' + err.message, 'error');
+                }
+            });
+
+        } catch (error) {
             Swal.fire({
                 icon: 'error',
                 title: 'Bağlantı Hatası',
-                text: 'Mobil ağınız veya tarayıcınız veri çekilmesini engelliyor. Lütfen Wi-Fi ağına bağlanıp tekrar deneyin.',
-                footer: `<span style="font-size:11px; color:gray;">Teknik Detay: ${finalError}</span>`
+                text: 'Google tablolarına erişilemedi. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.',
+                footer: `<span style="font-size:11px; color:gray;">Teknik Detay: ${error.message}</span>`
             });
-            return;
         }
-
-        // PRO Seviye CSV Ayrıştırma (PapaParse - Bozuk virgülleri ve satırları otomatik tolere eder)
-        Papa.parse(csvText, {
-            header: false,
-            skipEmptyLines: true,
-            complete: function(results) {
-                isleyipKaydet(results.data);
-            },
-            error: function(err) {
-                Swal.fire('Veri Okuma Hatası', 'Google tablonuzdaki veriler bozuk: ' + err.message, 'error');
-            }
-        });
     }
 
     function isleyipKaydet(rows) {
@@ -245,7 +222,6 @@
         for (let i = 1; i < rows.length; i++) {
             let cols = rows[i];
             
-            // Eğer boş satırsa veya sadece 1-2 sütun doldurulmuşsa atla
             if (!cols || cols.length < 2 || String(cols[0]).trim() === "") continue;
 
             const parseNum = (val) => {
@@ -257,7 +233,6 @@
             const name = String(cols[0]).trim();
             const exam = String(cols[1]).trim();
             
-            // Kolonlar eksikse hata vermesin, 0 kabul etsin (PRO Hata Toleransı)
             const tur = parseNum(cols[2]);
             const ink = parseNum(cols[3]);
             const din = parseNum(cols[4]);
@@ -281,7 +256,6 @@
         dropdownlariGuncelle();
         analizGuncelle();
         
-        // İşlem bittiğinde tatlı bir bildirim göster
         Swal.fire({
             icon: 'success',
             title: 'Veriler Güncellendi',
@@ -405,7 +379,6 @@
         const ctx = document.getElementById('devChart').getContext('2d');
         if(myChart) myChart.destroy();
         
-        // PRO Grafik Tasarımı
         Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
         myChart = new Chart(ctx, {
             type: 'line',
@@ -418,7 +391,7 @@
                     backgroundColor: 'rgba(41, 128, 185, 0.15)',
                     borderWidth: 3,
                     fill: true, 
-                    tension: 0.4, // Yumuşak eğriler
+                    tension: 0.4,
                     pointBackgroundColor: '#e74c3c',
                     pointBorderColor: '#fff',
                     pointRadius: 6,
