@@ -1,1271 +1,704 @@
 <!DOCTYPE html>
 <html lang="tr" translate="no">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="google" content="notranslate">
-    <meta name="theme-color" content="#2c3e50">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Öğrenci Gelişim Analiz Paneli PRO</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="google" content="notranslate">
+<meta name="theme-color" content="#2c3e50">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Öğrenci Gelişim Analiz Paneli PRO</title>
 
-    <style>
-        * { box-sizing: border-box; }
+<style>
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, Arial, sans-serif;
+    background: #f0f2f5;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    color: #2c3e50;
+}
+.container { max-width: 1100px; margin: auto; width: 100%; }
+header {
+    background: #2c3e50;
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,.1);
+    position: relative;
+    min-height: 80px;
+    margin-bottom: 20px;
+}
+.header-controls {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+header h1 { margin: 0; font-size: 24px; }
+header h2 { margin: 5px 0 0; font-size: 15px; font-weight: 300; color: #ecf0f1; opacity: .9; }
 
-        html, body { margin: 0; padding: 0; }
+.main-content {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.1);
+}
+select, button {
+    font: inherit;
+    -webkit-appearance: none;
+}
+select {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: white;
+    font-size: 14px;
+}
+button {
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background .2s, opacity .2s;
+    -webkit-tap-highlight-color: transparent;
+}
+button:active { opacity: .8; }
+.btn-header { padding: 7px 12px; font-size: 11px; width: 145px; text-align: left; }
+.btn-refresh { background: #27ae60; color: white; }
+.btn-report { background: #8e44ad; color: white; }
+.main-tabs {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    justify-content: center;
+}
+.main-tabs button {
+    background: #ecf0f1;
+    color: #2c3e50;
+    padding: 12px 25px;
+    min-width: 180px;
+}
+.main-tabs button.active { background: #2c3e50; color: white; }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f2f5;
-            color: #2c3e50;
-            min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            -webkit-text-size-adjust: 100%;
-        }
+.branch-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    margin-bottom: 15px;
+}
+.branch-tabs button {
+    width: 100%;
+    padding: 9px 2px;
+    font-size: 12px;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    color: #555;
+}
+.branch-tabs button.active { background: #3498db; color: white; border-color: #3498db; }
 
-        button, select { font: inherit; }
-        button { -webkit-tap-highlight-color: transparent; }
+.stats-container {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+    min-height: 80px;
+    flex-wrap: wrap;
+}
+.stat-card {
+    flex: 1 1 100px;
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #eee;
+    min-width: 90px;
+}
+.stat-card h4 { margin: 0 0 10px; font-size: 13px; color: #7f8c8d; }
+.stat-value { font-size: 19px; font-weight: bold; color: #2c3e50; }
+.stat-card.highlight { background: #e8f4fd; border-color: #3498db; }
 
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            width: 100%;
-            flex: 1;
-        }
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 20px;
+    border-radius: 5px;
+    border: 1px solid #eee;
+}
+table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 800px; }
+th, td { border: 1px solid #eee; padding: 12px 8px; text-align: center; white-space: nowrap; }
+th { background: #f8f9fa; color: #2c3e50; font-weight: bold; }
 
-        header {
-            background: #2c3e50;
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            min-height: 80px;
-            margin-bottom: 20px;
-        }
+.chart-box {
+    margin-top: 10px;
+    height: 350px;
+    width: 100%;
+    position: relative;
+}
+#devChart {
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow: visible;
+}
+.chart-legend {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 4px;
+    font-size: 12px;
+}
+.legend-item { display: flex; align-items: center; gap: 5px; }
+.legend-line { width: 28px; height: 3px; background: #3498db; display: inline-block; }
+.legend-line.school {
+    background: repeating-linear-gradient(90deg, #e67e22 0 6px, transparent 6px 10px);
+}
 
-        .header-controls {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
+.filter-section {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #eee;
+}
+.view-section { display: none; }
+.view-section.active { display: block; }
+.loading-overlay {
+    display: none;
+    text-align: center;
+    padding: 20px;
+    font-weight: bold;
+    color: #2980b9;
+}
+.error-box {
+    display: none;
+    margin-bottom: 15px;
+    padding: 12px;
+    border-radius: 7px;
+    background: #fdecea;
+    border: 1px solid #f5c6cb;
+    color: #a94442;
+    font-size: 13px;
+}
+footer {
+    text-align: center;
+    padding: 25px 10px;
+    margin-top: 25px;
+    font-size: 12px;
+    color: #7f8c8d;
+    border-top: 1px solid #ddd;
+}
 
-        header h1 { margin: 0; font-size: 24px; line-height: 1.25; }
-        header h2 { margin: 5px 0 0 0; font-size: 15px; font-weight: 300; color: #ecf0f1; opacity: 0.9; }
-
-        .main-content {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            min-width: 0;
-        }
-
-        select {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0 15px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background: #fff;
-            box-sizing: border-box;
-            font-size: 14px;
-            color: #2c3e50;
-            min-height: 42px;
-        }
-
-        button {
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.2s;
-            touch-action: manipulation;
-        }
-
-        button:active { transform: scale(0.98); }
-
-        .btn-header { padding: 7px 12px; font-size: 11px; width: 150px; text-align: left; }
-        .btn-refresh { background: #27ae60; color: white; }
-        .btn-report { background: #8e44ad; color: white; }
-        .btn-refresh:hover { background: #2ecc71; }
-        .btn-report:hover { background: #9b59b6; }
-
-        .main-tabs {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-            justify-content: center;
-        }
-
-        .main-tabs button {
-            background: #ecf0f1;
-            color: #2c3e50;
-            border-radius: 5px;
-            padding: 12px 25px;
-            min-width: 180px;
-            font-size: 15px;
-            flex: 0 1 auto;
-        }
-
-        .main-tabs button.active { background: #2c3e50; color: white; }
-
-        .branch-tabs {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 5px;
-            margin-bottom: 15px;
-        }
-
-        .branch-tabs button {
-            width: 100%;
-            padding: 9px 2px;
-            font-size: 12px;
-            background: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            color: #555;
-            min-height: 38px;
-        }
-
-        .branch-tabs button.active {
-            background: #3498db;
-            color: white;
-            border-color: #3498db;
-        }
-
-        .stats-container {
-            display: flex;
-            gap: 15px;
-            margin-top: 15px;
-            min-height: 80px;
-            flex-wrap: wrap;
-        }
-
-        .stat-card {
-            flex: 1 1 100px;
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            border: 1px solid #eee;
-            min-width: 90px;
-        }
-
-        .stat-card h4 { margin: 0 0 10px 0; font-size: 13px; color: #7f8c8d; }
-        .stat-value { font-size: 19px; font-weight: bold; color: #2c3e50; }
-        .stat-card.highlight { background: #e8f4fd; border-color: #3498db; }
-
-        .table-container {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            margin-top: 20px;
-            border-radius: 5px;
-            border: 1px solid #eee;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-            min-width: 800px;
-        }
-
-        th, td { border: 1px solid #eee; padding: 12px 8px; text-align: center; white-space: nowrap; }
-        th { background: #f8f9fa; color: #2c3e50; font-weight: bold; }
-        tbody tr:nth-child(even) { background: #fcfcfc; }
-
-        /* Chart: native SVG kullanılıyor; böylece Chart.js/Canvas/ResizeObserver bağımlılığı yok. */
-        .chart-box {
-            position: relative;
-            width: 100%;
-            height: 350px;
-            margin-top: 10px;
-            overflow: hidden;
-            border: 1px solid #f1f1f1;
-            border-radius: 8px;
-            background: #fff;
-            min-width: 0;
-        }
-
-        #devChart {
-            display: block;
-            width: 100%;
-            height: 100%;
-            overflow: visible;
-        }
-
-        .chart-legend {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
-            padding: 8px 10px 0;
-            font-size: 12px;
-            color: #555;
-        }
-
-        .legend-item { display: inline-flex; align-items: center; gap: 7px; }
-        .legend-line { width: 28px; height: 0; border-top: 3px solid currentColor; }
-        .legend-line.school { border-top-style: dashed; }
-
-        .filter-section {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border: 1px solid #eee;
-        }
-
-        .view-section { display: none; }
-        .view-section.active { display: block; }
-
-        .loading-overlay {
-            display: none;
-            text-align: center;
-            padding: 25px;
-            margin-bottom: 15px;
-            font-weight: bold;
-            color: #2980b9;
-            background: #eef7fd;
-            border: 1px solid #cfe8f7;
-            border-radius: 8px;
-        }
-
-        .error-box {
-            display: none;
-            padding: 15px;
-            margin-bottom: 15px;
-            background: #fff3f3;
-            color: #a93226;
-            border: 1px solid #f5c6cb;
-            border-radius: 8px;
-            line-height: 1.5;
-            font-size: 13px;
-        }
-
-        .empty-message {
-            color: #7f8c8d;
-            padding: 22px;
-            text-align: center;
-        }
-
-        footer {
-            text-align: center;
-            padding: 25px 10px 10px;
-            margin-top: auto;
-            font-size: 12px;
-            color: #7f8c8d;
-        }
-
-        @media (max-width: 768px) {
-            body { padding: 10px; }
-
-            header {
-                padding: 62px 15px 18px;
-                min-height: 130px;
-            }
-
-            .header-controls {
-                position: absolute;
-                top: 10px;
-                left: 0;
-                right: 0;
-                transform: none;
-                flex-direction: row;
-                justify-content: center;
-                width: 100%;
-                gap: 6px;
-            }
-
-            .btn-header { width: auto; font-size: 10px; padding: 7px 10px; }
-            header h1 { font-size: 20px; }
-            header h2 { font-size: 13px; }
-
-            .main-content { padding: 15px; }
-
-            .main-tabs { flex-direction: column; align-items: stretch; gap: 8px; }
-            .main-tabs button { min-width: 100%; padding: 11px 15px; }
-
-            .branch-tabs { grid-template-columns: repeat(2, 1fr); }
-            .stats-container { gap: 8px; }
-            .stat-card { padding: 11px 8px; min-width: 78px; }
-            .stat-card h4 { font-size: 11px; }
-            .stat-value { font-size: 17px; }
-            .chart-box { height: 300px; }
-        }
-
-        @media (max-width: 430px) {
-            .chart-box { height: 270px; }
-            .chart-legend { gap: 10px; font-size: 11px; }
-        }
-    </style>
+@media (max-width: 768px) {
+    body { padding: 10px; }
+    header {
+        padding: 62px 15px 18px;
+        min-height: 130px;
+    }
+    .header-controls {
+        position: absolute;
+        top: 10px;
+        left: 0;
+        right: 0;
+        transform: none;
+        flex-direction: row;
+        justify-content: center;
+        width: 100%;
+        gap: 6px;
+    }
+    .btn-header { width: auto; font-size: 10px; padding: 7px 10px; }
+    header h1 { font-size: 20px; }
+    header h2 { font-size: 13px; }
+    .main-content { padding: 15px; }
+    .main-tabs { flex-direction: column; align-items: stretch; gap: 8px; }
+    .main-tabs button { min-width: 100%; padding: 11px 15px; }
+    .branch-tabs { grid-template-columns: repeat(2, 1fr); }
+    .stats-container { gap: 8px; }
+    .stat-card { padding: 11px 8px; min-width: 78px; }
+    .stat-card h4 { font-size: 11px; }
+    .stat-value { font-size: 17px; }
+    .chart-box { height: 300px; }
+}
+@media (max-width: 430px) {
+    .chart-box { height: 270px; }
+    .chart-legend { gap: 10px; font-size: 11px; }
+}
+</style>
 </head>
-<body>
 
+<body>
 <header>
     <div class="header-controls">
         <button class="btn-header btn-refresh" type="button" onclick="verileriGetir()">🔄 Verileri Yenile</button>
-        <button class="btn-header btn-report" type="button" onclick="excelRaporAl()">📊 CSV Olarak İndir</button>
+        <button class="btn-header btn-report" type="button" onclick="csvRaporAl()">📊 CSV Olarak İndir</button>
     </div>
     <h1>🎓 Öğrenci Gelişim &amp; LGS Analiz Sistemi</h1>
     <h2>Kıbrıs Ortaokulu Rehberlik Servisi</h2>
 </header>
 
 <div class="container">
-    <div class="main-content">
-        <div class="main-tabs">
-            <button class="active" id="tabAnalizBtn" type="button" onclick="switchMainTab('analiz')">📈 Bireysel Analiz</button>
-            <button id="tabSiralamaBtn" type="button" onclick="switchMainTab('siralama')">🏆 Genel Sıralama</button>
+<div class="main-content">
+    <div class="main-tabs">
+        <button class="active" id="tabAnalizBtn" type="button" onclick="switchMainTab('analiz')">📈 Bireysel Analiz</button>
+        <button id="tabSiralamaBtn" type="button" onclick="switchMainTab('siralama')">🏆 Genel Sıralama</button>
+    </div>
+
+    <div id="loadingMsg" class="loading-overlay">⏳ Veriler yükleniyor, lütfen bekleyin...</div>
+    <div id="errorMsg" class="error-box"></div>
+
+    <div id="analizView" class="view-section active">
+        <div class="filter-section">
+            <label for="studentFilter"><strong>🔍 Öğrenci Seçin:</strong></label>
+            <select id="studentFilter" onchange="analizGuncelle()"></select>
         </div>
 
-        <div id="loadingMsg" class="loading-overlay">⏳ Veriler tablodan çekiliyor, lütfen bekleyin...</div>
-        <div id="errorMsg" class="error-box"></div>
+        <div class="branch-tabs" id="branchTabs">
+            <button class="active" type="button" onclick="setBranch('total', this)">Toplam Net</button>
+            <button type="button" onclick="setBranch('lgs', this)">LGS Puanı</button>
+            <button type="button" onclick="setBranch('tur', this)">Türkçe</button>
+            <button type="button" onclick="setBranch('ink', this)">İnkılap</button>
+            <button type="button" onclick="setBranch('din', this)">Din K.</button>
+            <button type="button" onclick="setBranch('ing', this)">İngilizce</button>
+            <button type="button" onclick="setBranch('mat', this)">Matematik</button>
+            <button type="button" onclick="setBranch('fen', this)">Fen Bilimleri</button>
+        </div>
 
-        <div id="analizView" class="view-section active">
-            <div class="filter-section">
-                <label for="studentFilter"><strong>🔍 Öğrenci Seçin:</strong></label>
-                <select id="studentFilter" onchange="analizGuncelle()"></select>
-            </div>
+        <div class="chart-box">
+            <svg id="devChart" viewBox="0 0 1000 400" preserveAspectRatio="none" role="img" aria-label="Öğrenci gelişim grafiği"></svg>
+        </div>
+        <div class="chart-legend">
+            <span class="legend-item"><span class="legend-line"></span> Öğrenci</span>
+            <span class="legend-item"><span class="legend-line school"></span> Okul Ortalaması</span>
+        </div>
 
-            <div class="branch-tabs" id="branchTabs">
-                <button class="active" type="button" onclick="setBranch('total', this)">Toplam Net</button>
-                <button type="button" onclick="setBranch('lgs', this)">LGS Puanı</button>
-                <button type="button" onclick="setBranch('tur', this)">Türkçe</button>
-                <button type="button" onclick="setBranch('ink', this)">İnkılap</button>
-                <button type="button" onclick="setBranch('din', this)">Din K.</button>
-                <button type="button" onclick="setBranch('ing', this)">İngilizce</button>
-                <button type="button" onclick="setBranch('mat', this)">Matematik</button>
-                <button type="button" onclick="setBranch('fen', this)">Fen Bilimleri</button>
-            </div>
+        <div class="stats-container" id="statsContainer"></div>
 
-            <div class="chart-box">
-                <svg id="devChart" viewBox="0 0 1000 400" preserveAspectRatio="none" role="img" aria-label="Öğrenci gelişim grafiği"></svg>
-            </div>
-            <div class="chart-legend">
-                <span class="legend-item" style="color:#3498db"><span class="legend-line"></span> Öğrenci</span>
-                <span class="legend-item" style="color:#e67e22"><span class="legend-line school"></span> Okul Ortalaması</span>
-            </div>
+        <div class="table-container">
+            <table id="resTable">
+                <thead><tr>
+                    <th>Sınav</th><th>TÜR</th><th>İNK</th><th>DİN</th><th>İNG</th>
+                    <th>MAT</th><th>FEN</th><th>TOPLAM NET</th><th>LGS PUANI</th>
+                </tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
 
-            <div class="stats-container" id="statsContainer"></div>
-
-            <div class="table-container">
-                <table id="resTable">
-                    <thead>
-                        <tr><th>Sınav</th><th>TÜR</th><th>İNK</th><th>DİN</th><th>İNG</th><th>MAT</th><th>FEN</th><th>TOPLAM NET</th><th>LGS PUANI</th></tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+    <div id="siralamaView" class="view-section">
+        <div class="filter-section">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
+                <select id="examFilter" onchange="siralamaGuncelle()"></select>
+                <select id="sortFilter" onchange="siralamaGuncelle()">
+                    <option value="lgs">Sıralama: LGS Puanı</option>
+                    <option value="total">Sıralama: Toplam Net</option>
+                    <option value="tur">Sıralama: Türkçe</option>
+                    <option value="ink">Sıralama: İnkılap</option>
+                    <option value="din">Sıralama: Din K.</option>
+                    <option value="ing">Sıralama: İngilizce</option>
+                    <option value="mat">Sıralama: Matematik</option>
+                    <option value="fen">Sıralama: Fen Bilimleri</option>
+                </select>
             </div>
         </div>
 
-        <div id="siralamaView" class="view-section">
-            <div class="filter-section">
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
-                    <select id="examFilter" onchange="siralamaGuncelle()"></select>
-                    <select id="sortFilter" onchange="siralamaGuncelle()">
-                        <option value="lgs">Sıralama: LGS Puanı</option>
-                        <option value="total">Sıralama: Toplam Net</option>
-                        <option value="tur">Sıralama: Türkçe</option>
-                        <option value="ink">Sıralama: İnkılap</option>
-                        <option value="din">Sıralama: Din K.</option>
-                        <option value="ing">Sıralama: İngilizce</option>
-                        <option value="mat">Sıralama: Matematik</option>
-                        <option value="fen">Sıralama: Fen Bilimleri</option>
-                    </select>
-                </div>
-            </div>
+        <div class="stats-container" id="examAveragesContainer" style="display:none;margin-bottom:20px;"></div>
 
-            <div class="stats-container" id="examAveragesContainer" style="display:none;margin-bottom:20px;"></div>
-
-            <div class="table-container">
-                <table id="rankTable">
-                    <thead>
-                        <tr><th>Sıra</th><th>Öğrenci Adı</th><th>TÜR</th><th>İNK</th><th>DİN</th><th>İNG</th><th>MAT</th><th>FEN</th><th>TOPLAM NET</th><th>LGS PUANI</th></tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
+        <div class="table-container">
+            <table id="rankTable">
+                <thead><tr>
+                    <th>Sıra</th><th>Öğrenci Adı</th><th>TÜR</th><th>İNK</th><th>DİN</th>
+                    <th>İNG</th><th>MAT</th><th>FEN</th><th>TOPLAM NET</th><th>LGS PUANI</th>
+                </tr></thead>
+                <tbody></tbody>
+            </table>
         </div>
     </div>
 </div>
+</div>
 
 <footer>
-    Kıbrıs Ortaokulu için Okul Psikolojik Danışmanı Sezer TEKİN tarafından dijital araçlar kullanılarak tasarlanmıştır.
+Kıbrıs Ortaokulu için Okul Psikolojik Danışmanı Sezer TEKİN tarafından dijital araçlar kullanılarak dijital araçlar kullanılarak tasarlanmıştır.
 </footer>
 
 <script>
-    /* ============================================================
-       GOOGLE SHEETS VERİ KAYNAĞI
-       ============================================================ */
-    var SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRv-FWL1F43vukW6ycM14PaawZ4vyN1_ZugKabHtsHabAgYCCYeVU6ohMEH79eFXYGTSK_TyhnYp6Qd/pub?output=csv';
+/*
+  ÖNEMLİ MİMARİ DEĞİŞİKLİĞİ:
+  Bu sayfa Google Sheets'e doğrudan bağlanmaz.
+  GitHub Actions Google Sheets'ten data.csv üretir.
+  Safari/iOS yalnızca aynı GitHub Pages alanındaki data.csv dosyasını okur.
+*/
+const DATA_URL = 'data.csv';
+let dataStore = [];
+let currentBranch = 'total';
 
-    var dataStore = [];
-    var currentBranch = 'total';
+const branchNames = {
+    total:'Toplam Net', lgs:'LGS Puanı', tur:'Türkçe', ink:'İnkılap',
+    din:'Din K.', ing:'İngilizce', mat:'Matematik', fen:'Fen Bilimleri'
+};
 
-    var branchNames = {
-        total: 'Toplam Net',
-        lgs: 'LGS Puanı',
-        tur: 'Türkçe',
-        ink: 'İnkılap',
-        din: 'Din K.',
-        ing: 'İngilizce',
-        mat: 'Matematik',
-        fen: 'Fen Bilimleri'
-    };
+function escapeHtml(value) {
+    return String(value == null ? '' : value)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
 
-    var COLORS = {
-        student: '#3498db',
-        school: '#e67e22',
-        grid: '#e9ecef',
-        text: '#6c757d'
-    };
+function parseNum(value) {
+    if (value == null || String(value).trim() === '') return 0;
+    let s = String(value).trim().replace(/\s/g,'');
+    const comma = s.lastIndexOf(',');
+    const dot = s.lastIndexOf('.');
+    if (comma > -1 && dot > -1) {
+        s = comma > dot ? s.replace(/\./g,'').replace(',','.') : s.replace(/,/g,'');
+    } else if (comma > -1) {
+        s = s.replace(',','.');
+    }
+    const n = Number(s);
+    return Number.isFinite(n) ? n : 0;
+}
 
-    window.addEventListener('DOMContentLoaded', function () {
-        verileriGetir();
+/* Virgül veya noktalı virgül kullanan CSV; tırnaklı hücreleri de destekler. */
+function parseCSV(text) {
+    text = String(text || '').replace(/^\uFEFF/,'');
+    let separator = ',';
+    let inQuotes = false, commas = 0, semicolons = 0;
+    for (let i=0; i<text.length; i++) {
+        const ch=text[i];
+        if (ch === '"') {
+            if (inQuotes && text[i+1] === '"') i++;
+            else inQuotes=!inQuotes;
+        } else if (!inQuotes) {
+            if (ch===',') commas++;
+            if (ch===';') semicolons++;
+            if (ch==='\n' || ch==='\r') break;
+        }
+    }
+    separator = semicolons > commas ? ';' : ',';
+
+    const rows=[], row=[]; // dummy for scope clarity
+    let r=[], field='';
+    inQuotes=false;
+
+    for (let i=0; i<text.length; i++) {
+        const ch=text[i];
+        if (ch === '"') {
+            if (inQuotes && text[i+1] === '"') { field+='"'; i++; }
+            else inQuotes=!inQuotes;
+        } else if (ch === separator && !inQuotes) {
+            r.push(field.trim()); field='';
+        } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
+            if (ch === '\r' && text[i+1] === '\n') i++;
+            r.push(field.trim()); field='';
+            if (r.some(v => String(v).trim() !== '')) rows.push(r);
+            r=[];
+        } else {
+            field += ch;
+        }
+    }
+    r.push(field.trim());
+    if (r.some(v => String(v).trim() !== '')) rows.push(r);
+    return rows;
+}
+
+function showError(message) {
+    const box=document.getElementById('errorMsg');
+    box.textContent=message;
+    box.style.display='block';
+}
+function hideError() {
+    const box=document.getElementById('errorMsg');
+    box.textContent='';
+    box.style.display='none';
+}
+
+async function verileriGetir() {
+    const loading=document.getElementById('loadingMsg');
+    loading.style.display='block';
+    hideError();
+
+    try {
+        const response=await fetch(DATA_URL + '?v=' + Date.now(), {
+            method:'GET',
+            cache:'no-store',
+            credentials:'same-origin'
+        });
+        if (!response.ok) throw new Error('data.csv alınamadı (HTTP '+response.status+').');
+
+        const raw=await response.text();
+        if (!raw.trim()) throw new Error('data.csv boş.');
+        if (/^\s*<(?:!DOCTYPE|html)/i.test(raw)) throw new Error('data.csv yerine HTML sayfası geldi.');
+
+        const rows=parseCSV(raw);
+        if (rows.length < 2) throw new Error('Henüz öğrenci verisi yayınlanmamış.');
+
+        dataStore=[];
+        for (let i=1; i<rows.length; i++) {
+            const c=rows[i];
+            if (c.length<9) continue;
+
+            const name=String(c[0]||'').trim();
+            const exam=String(c[1]||'').trim();
+            if (!name || !exam) continue;
+
+            const tur=parseNum(c[2]), ink=parseNum(c[3]), din=parseNum(c[4]);
+            const ing=parseNum(c[5]), mat=parseNum(c[6]), fen=parseNum(c[7]), lgs=parseNum(c[8]);
+
+            dataStore.push({
+                name, exam, tur, ink, din, ing, mat, fen, lgs,
+                total:tur+ink+din+ing+mat+fen
+            });
+        }
+
+        if (!dataStore.length) throw new Error('Kullanılabilir öğrenci kaydı bulunamadı.');
+
+        dropdownlariGuncelle();
+        analizGuncelle();
+    } catch (e) {
+        console.error(e);
+        dataStore=[];
+        document.getElementById('studentFilter').innerHTML='<option value="">-- Veri alınamadı --</option>';
+        document.getElementById('examFilter').innerHTML='<option value="">-- Veri alınamadı --</option>';
+        document.querySelector('#resTable tbody').innerHTML='<tr><td colspan="9">Veriler yüklenemedi.</td></tr>';
+        document.querySelector('#rankTable tbody').innerHTML='<tr><td colspan="10">Veriler yüklenemedi.</td></tr>';
+        document.getElementById('statsContainer').innerHTML='';
+        drawEmptyChart('Veri yüklenemedi');
+        showError('Veri yüklenemedi: '+e.message);
+    } finally {
+        loading.style.display='none';
+    }
+}
+
+function addOption(select, text, value, bold=false) {
+    const opt=document.createElement('option');
+    opt.textContent=text;
+    opt.value=value;
+    if (bold) opt.style.fontWeight='bold';
+    select.appendChild(opt);
+}
+
+function dropdownlariGuncelle() {
+    const s=document.getElementById('studentFilter');
+    s.innerHTML='';
+    addOption(s,'-- Öğrenci Seçin --','');
+
+    [...new Set(dataStore.map(d=>d.name))].sort((a,b)=>a.localeCompare(b,'tr'))
+        .forEach(n=>addOption(s,n,n));
+
+    const e=document.getElementById('examFilter');
+    e.innerHTML='';
+    addOption(e,'-- Sınav Seçin --','');
+    addOption(e,'🏆 Tüm Sınavların Genel Ortalaması','GENEL_ORTALAMA',true);
+
+    [...new Set(dataStore.map(d=>d.exam))].forEach(x=>addOption(e,x,x));
+}
+
+function siralamaGuncelle() {
+    const exam=document.getElementById('examFilter').value;
+    const sortKey=document.getElementById('sortFilter').value;
+    const tbody=document.querySelector('#rankTable tbody');
+    const avgContainer=document.getElementById('examAveragesContainer');
+
+    if (!exam) {
+        tbody.innerHTML='<tr><td colspan="10">Lütfen bir sınav belirleyin.</td></tr>';
+        avgContainer.style.display='none';
+        return;
+    }
+
+    let displayData=[];
+    if (exam==='GENEL_ORTALAMA') {
+        const groups={};
+        dataStore.forEach(d=>{
+            if(!groups[d.name]) groups[d.name]={tur:0,ink:0,din:0,ing:0,mat:0,fen:0,lgs:0,total:0,count:0};
+            ['tur','ink','din','ing','mat','fen','lgs','total'].forEach(k=>groups[d.name][k]+=d[k]);
+            groups[d.name].count++;
+        });
+        displayData=Object.keys(groups).map(name=>{
+            const g=groups[name];
+            return {name, tur:g.tur/g.count, ink:g.ink/g.count, din:g.din/g.count,
+                ing:g.ing/g.count, mat:g.mat/g.count, fen:g.fen/g.count,
+                lgs:g.lgs/g.count, total:g.total/g.count};
+        });
+    } else {
+        displayData=dataStore.filter(d=>d.exam===exam).slice();
+    }
+
+    displayData.sort((a,b)=>(b[sortKey]||0)-(a[sortKey]||0));
+
+    if (displayData.length) {
+        const f=k=>(displayData.reduce((sum,d)=>sum+d[k],0)/displayData.length).toFixed(2);
+        avgContainer.innerHTML=`
+            <div class="stat-card"><h4>TÜR Ort.</h4><div class="stat-value">${f('tur')}</div></div>
+            <div class="stat-card"><h4>İNK Ort.</h4><div class="stat-value">${f('ink')}</div></div>
+            <div class="stat-card"><h4>DİN Ort.</h4><div class="stat-value">${f('din')}</div></div>
+            <div class="stat-card"><h4>İNG Ort.</h4><div class="stat-value">${f('ing')}</div></div>
+            <div class="stat-card"><h4>MAT Ort.</h4><div class="stat-value">${f('mat')}</div></div>
+            <div class="stat-card"><h4>FEN Ort.</h4><div class="stat-value">${f('fen')}</div></div>
+            <div class="stat-card highlight"><h4>Top. Net</h4><div class="stat-value" style="color:#2980b9">${f('total')}</div></div>
+            <div class="stat-card highlight"><h4>LGS Puan</h4><div class="stat-value" style="color:#e67e22">${f('lgs')}</div></div>`;
+        avgContainer.style.display='flex';
+    }
+
+    const hl=k=>sortKey===k?'font-weight:bold;background:#fff9db':'';
+    tbody.innerHTML=displayData.map((d,i)=>`
+        <tr>
+            <td>${i+1}</td>
+            <td style="text-align:left;font-weight:500">${escapeHtml(d.name)}</td>
+            <td style="${hl('tur')}">${d.tur.toFixed(2)}</td>
+            <td style="${hl('ink')}">${d.ink.toFixed(2)}</td>
+            <td style="${hl('din')}">${d.din.toFixed(2)}</td>
+            <td style="${hl('ing')}">${d.ing.toFixed(2)}</td>
+            <td style="${hl('mat')}">${d.mat.toFixed(2)}</td>
+            <td style="${hl('fen')}">${d.fen.toFixed(2)}</td>
+            <td style="color:#2980b9;${hl('total')}">${d.total.toFixed(2)}</td>
+            <td style="color:#e67e22;${hl('lgs')}">${d.lgs.toFixed(2)}</td>
+        </tr>`).join('');
+}
+
+function getArrow(curr,prev) {
+    if (prev===null) return '';
+    if (curr>prev) return ' <span style="color:#27ae60;font-weight:bold">↑</span>';
+    if (curr<prev) return ' <span style="color:#e74c3c;font-weight:bold">↓</span>';
+    return ' <span style="color:#95a5a6;font-weight:bold">-</span>';
+}
+
+function analizGuncelle() {
+    const student=document.getElementById('studentFilter').value;
+    const filtered=dataStore.filter(d=>d.name===student);
+    const tbody=document.querySelector('#resTable tbody');
+    const stats=document.getElementById('statsContainer');
+
+    if (!student) {
+        tbody.innerHTML='<tr><td colspan="9">Lütfen bir öğrenci seçin.</td></tr>';
+        stats.innerHTML='';
+        drawEmptyChart('');
+        return;
+    }
+
+    const schoolAvgData=filtered.map(se=>{
+        const examData=dataStore.filter(d=>d.exam===se.exam);
+        return examData.length ? examData.reduce((sum,d)=>sum+d[currentBranch],0)/examData.length : 0;
     });
 
-    /* ============================================================
-       YARDIMCI FONKSİYONLAR
-       ============================================================ */
-    function escapeHtml(value) {
-        return String(value == null ? '' : value)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
+    tbody.innerHTML=filtered.map((d,i)=>{
+        const prev=i>0?filtered[i-1]:null;
+        return `<tr>
+            <td>${escapeHtml(d.exam)}</td>
+            <td>${d.tur.toFixed(2)}${getArrow(d.tur,prev?prev.tur:null)}</td>
+            <td>${d.ink.toFixed(2)}${getArrow(d.ink,prev?prev.ink:null)}</td>
+            <td>${d.din.toFixed(2)}${getArrow(d.din,prev?prev.din:null)}</td>
+            <td>${d.ing.toFixed(2)}${getArrow(d.ing,prev?prev.ing:null)}</td>
+            <td>${d.mat.toFixed(2)}${getArrow(d.mat,prev?prev.mat:null)}</td>
+            <td>${d.fen.toFixed(2)}${getArrow(d.fen,prev?prev.fen:null)}</td>
+            <td style="font-weight:bold;color:#2980b9">${d.total.toFixed(2)}${getArrow(d.total,prev?prev.total:null)}</td>
+            <td style="font-weight:bold;color:#e67e22">${d.lgs.toFixed(2)}${getArrow(d.lgs,prev?prev.lgs:null)}</td>
+        </tr>`;
+    }).join('');
+
+    const studentValues=filtered.map(d=>d[currentBranch]);
+    drawChart(filtered.map(d=>d.exam),studentValues,schoolAvgData,branchNames[currentBranch]);
+
+    const last=filtered[filtered.length-1];
+    const avg=studentValues.reduce((a,b)=>a+b,0)/studentValues.length;
+    stats.innerHTML=`
+        <div class="stat-card"><h4>Son Durum</h4><div class="stat-value">${last[currentBranch].toFixed(2)}</div></div>
+        <div class="stat-card"><h4>Öğrenci Ort.</h4><div class="stat-value">${avg.toFixed(2)}</div></div>
+        <div class="stat-card"><h4>Sınav Sayısı</h4><div class="stat-value">${filtered.length}</div></div>`;
+}
+
+function drawEmptyChart(message) {
+    const svg=document.getElementById('devChart');
+    svg.innerHTML=message?`<text x="500" y="205" text-anchor="middle" fill="#95a5a6" font-size="18">${escapeHtml(message)}</text>`:'';
+}
+
+function drawChart(labels,student,school,title) {
+    const svg=document.getElementById('devChart');
+    const W=1000,H=400,left=70,right=25,top=35,bottom=60;
+    const plotW=W-left-right, plotH=H-top-bottom;
+    const all=student.concat(school);
+    let min=Math.min(...all), max=Math.max(...all);
+    if (!Number.isFinite(min)||!Number.isFinite(max)) { drawEmptyChart('Grafik verisi yok'); return; }
+    if (min===max) { min-=1; max+=1; }
+    const pad=(max-min)*.12; min-=pad; max+=pad;
+
+    const x=i=>labels.length===1?left+plotW/2:left+(i/(labels.length-1))*plotW;
+    const y=v=>top+plotH-((v-min)/(max-min))*plotH;
+    const points=arr=>arr.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+
+    let html='';
+    for(let i=0;i<=5;i++){
+        const val=min+(max-min)*(i/5), yy=y(val);
+        html+=`<line x1="${left}" y1="${yy}" x2="${W-right}" y2="${yy}" stroke="#e9ecef" stroke-width="1"/>`;
+        html+=`<text x="${left-10}" y="${yy+4}" text-anchor="end" fill="#6c757d" font-size="12">${val.toFixed(1)}</text>`;
     }
+    html+=`<text x="${W/2}" y="20" text-anchor="middle" fill="#2c3e50" font-size="16" font-weight="bold">${escapeHtml(title)}</text>`;
 
-    function normalizeHeader(value) {
-        return String(value == null ? '' : value)
-            .replace(/^\uFEFF/, '')
-            .toLocaleLowerCase('tr-TR')
-            .replace(/İ/g, 'i')
-            .replace(/ı/g, 'i')
-            .replace(/ş/g, 's')
-            .replace(/ğ/g, 'g')
-            .replace(/ü/g, 'u')
-            .replace(/ö/g, 'o')
-            .replace(/ç/g, 'c')
-            .replace(/[^a-z0-9]/g, '');
+    labels.forEach((label,i)=>{
+        const xx=x(i);
+        html+=`<text x="${xx}" y="${H-28}" text-anchor="middle" fill="#6c757d" font-size="11" transform="rotate(-20 ${xx} ${H-28})">${escapeHtml(label)}</text>`;
+    });
+
+    if(labels.length>1){
+        html+=`<polyline points="${points(school)}" fill="none" stroke="#e67e22" stroke-width="3" stroke-dasharray="7 6" stroke-linecap="round" stroke-linejoin="round"/>`;
+        html+=`<polyline points="${points(student)}" fill="none" stroke="#3498db" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>`;
     }
+    student.forEach((v,i)=>{
+        html+=`<circle cx="${x(i)}" cy="${y(v)}" r="5" fill="#fff" stroke="#3498db" stroke-width="3"/>`;
+    });
+    svg.innerHTML=html;
+}
 
-    function parseNum(value) {
-        if (value == null) return 0;
-
-        var s = String(value).trim().replace(/^\uFEFF/, '');
-        if (!s) return 0;
-
-        s = s.replace(/\s/g, '');
-
-        var lastComma = s.lastIndexOf(',');
-        var lastDot = s.lastIndexOf('.');
-
-        if (lastComma > -1 && lastDot > -1) {
-            if (lastComma > lastDot) {
-                s = s.replace(/\./g, '').replace(',', '.');
-            } else {
-                s = s.replace(/,/g, '');
-            }
-        } else if (lastComma > -1) {
-            s = s.replace(',', '.');
-        }
-
-        var num = Number(s);
-        return isFinite(num) ? num : 0;
+function switchMainTab(tab) {
+    document.querySelectorAll('.view-section').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.main-tabs button').forEach(b=>b.classList.remove('active'));
+    if(tab==='analiz'){
+        document.getElementById('analizView').classList.add('active');
+        document.getElementById('tabAnalizBtn').classList.add('active');
+    }else{
+        document.getElementById('siralamaView').classList.add('active');
+        document.getElementById('tabSiralamaBtn').classList.add('active');
+        siralamaGuncelle();
     }
-
-    function formatNumber(value) {
-        return Number(value || 0).toFixed(2);
-    }
-
-    function csvEscape(value) {
-        var s = String(value == null ? '' : value);
-        if (/[;"\n\r]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
-        return s;
-    }
-
-    function showError(message) {
-        var box = document.getElementById('errorMsg');
-        box.innerHTML = message;
-        box.style.display = 'block';
-    }
-
-    function hideError() {
-        var box = document.getElementById('errorMsg');
-        box.innerHTML = '';
-        box.style.display = 'none';
-    }
-
-    function clearAllViews(message) {
-        document.querySelector('#resTable tbody').innerHTML = '<tr><td colspan="9" class="empty-message">' + escapeHtml(message) + '</td></tr>';
-        document.querySelector('#rankTable tbody').innerHTML = '<tr><td colspan="10" class="empty-message">' + escapeHtml(message) + '</td></tr>';
-        document.getElementById('statsContainer').innerHTML = '';
-        document.getElementById('examAveragesContainer').innerHTML = '';
-        document.getElementById('examAveragesContainer').style.display = 'none';
-        drawEmptyChart(message);
-    }
-
-    /* ============================================================
-       SAĞLAM CSV OKUYUCU
-       - virgül / noktalı virgül ayracını algılar
-       - tırnaklı alanları ve alan içi satır sonlarını destekler
-       - Google Sheets çıktısındaki "" tırnaklarını doğru çözer
-       ============================================================ */
-    function detectSeparator(text) {
-        var comma = 0;
-        var semicolon = 0;
-        var inQuotes = false;
-
-        for (var i = 0; i < text.length; i++) {
-            var ch = text[i];
-            if (ch === '"') {
-                if (inQuotes && text[i + 1] === '"') {
-                    i++;
-                } else {
-                    inQuotes = !inQuotes;
-                }
-            } else if (!inQuotes) {
-                if (ch === ',') comma++;
-                if (ch === ';') semicolon++;
-                if (ch === '\n' || ch === '\r') break;
-            }
-        }
-
-        return semicolon > comma ? ';' : ',';
-    }
-
-    function parseCSV(text, separator) {
-        text = String(text || '').replace(/^\uFEFF/, '');
-        var rows = [];
-        var row = [];
-        var field = '';
-        var inQuotes = false;
-
-        for (var i = 0; i < text.length; i++) {
-            var ch = text[i];
-
-            if (ch === '"') {
-                if (inQuotes && text[i + 1] === '"') {
-                    field += '"';
-                    i++;
-                } else {
-                    inQuotes = !inQuotes;
-                }
-            } else if (ch === separator && !inQuotes) {
-                row.push(field.trim());
-                field = '';
-            } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
-                if (ch === '\r' && text[i + 1] === '\n') i++;
-                row.push(field.trim());
-                field = '';
-                if (row.some(function (x) { return String(x).trim() !== ''; })) {
-                    rows.push(row);
-                }
-                row = [];
-            } else {
-                field += ch;
-            }
-        }
-
-        row.push(field.trim());
-        if (row.some(function (x) { return String(x).trim() !== ''; })) rows.push(row);
-
-        return rows;
-    }
-
-    /* ============================================================
-       VERİ ALMA
-       - fetch varsa fetch kullanılır
-       - fetch hata verirse XHR denenir
-       - iOS / eski Safari için AbortController zorunlu tutulmaz
-       ============================================================ */
-    function fetchText(url) {
-        if (window.fetch) {
-            return window.fetch(url, {
-                method: 'GET',
-                mode: 'cors',
-                credentials: 'omit',
-                cache: 'no-store',
-                headers: { 'Accept': 'text/csv,text/plain,*/*' }
-            }).then(function (response) {
-                if (!response.ok) throw new Error('Sunucu HTTP ' + response.status + ' yanıtı verdi.');
-                return response.text();
-            }).catch(function () {
-                return xhrText(url);
-            });
-        }
-
-        return xhrText(url);
-    }
-
-    function xhrText(url) {
-        return new Promise(function (resolve, reject) {
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', url, true);
-            xhr.timeout = 15000;
-            xhr.setRequestHeader('Accept', 'text/csv,text/plain,*/*');
-
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState !== 4) return;
-                if ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 0) {
-                    resolve(xhr.responseText);
-                } else {
-                    reject(new Error('Veri sunucusundan HTTP ' + xhr.status + ' yanıtı alındı.'));
-                }
-            };
-
-            xhr.onerror = function () {
-                reject(new Error('Tarayıcı Google Sheets bağlantısını engelledi veya bağlantı başarısız oldu.'));
-            };
-
-            xhr.ontimeout = function () {
-                reject(new Error('Google Sheets bağlantısı zaman aşımına uğradı.'));
-            };
-
-            try {
-                xhr.send();
-            } catch (e) {
-                reject(e);
-            }
-        });
-    }
-
-    /* ============================================================
-       VERİLERİ YÜKLE
-       ============================================================ */
-    function verileriGetir() {
-        var loading = document.getElementById('loadingMsg');
-        loading.style.display = 'block';
-        hideError();
-
-        fetchText(SHEET_URL + (SHEET_URL.indexOf('?') > -1 ? '&' : '?') + '_cache=' + new Date().getTime())
-            .then(function (rawData) {
-                var clean = String(rawData || '').trim();
-
-                if (!clean) {
-                    throw new Error('Google Sheets boş veri döndürdü.');
-                }
-
-                if (/^<!DOCTYPE html|^<html/i.test(clean)) {
-                    throw new Error('Google Sheets CSV yerine bir web sayfası döndürdü. Sayfanın "Yayınla > Web\'de yayınla > CSV" ayarını kontrol edin.');
-                }
-
-                var separator = detectSeparator(clean);
-                var rows = parseCSV(clean, separator);
-
-                if (rows.length < 2) {
-                    throw new Error('CSV içinde başlık dışında öğrenci verisi bulunamadı.');
-                }
-
-                var header = rows[0].map(normalizeHeader);
-
-                function findIndex(possibleNames, fallbackIndex) {
-                    for (var p = 0; p < possibleNames.length; p++) {
-                        var idx = header.indexOf(normalizeHeader(possibleNames[p]));
-                        if (idx !== -1) return idx;
-                    }
-                    return fallbackIndex;
-                }
-
-                var col = {
-                    name: findIndex(['öğrenci adı', 'ogrenci adi', 'öğrenci', 'ogrenci', 'ad soyad', 'adsoyad', 'isim', 'ad'], 0),
-                    exam: findIndex(['sınav', 'sinav', 'deneme', 'deneme adı', 'deneme adi'], 1),
-                    tur: findIndex(['tür', 'tur', 'türkçe', 'turkce'], 2),
-                    ink: findIndex(['ink', 'inkılap', 'inkilap', 'inkılap tarihi', 'inkilap tarihi'], 3),
-                    din: findIndex(['din', 'din k.', 'din kültürü', 'din kulturu'], 4),
-                    ing: findIndex(['ing', 'ingilizce', 'ingilizce'], 5),
-                    mat: findIndex(['mat', 'matematik'], 6),
-                    fen: findIndex(['fen', 'fen bilimleri'], 7),
-                    lgs: findIndex(['lgs', 'lgs puanı', 'lgs puani', 'puan'], 8)
-                };
-
-                dataStore = [];
-
-                for (var i = 1; i < rows.length; i++) {
-                    var row = rows[i];
-                    var name = row[col.name] == null ? '' : String(row[col.name]).trim();
-                    var exam = row[col.exam] == null ? '' : String(row[col.exam]).trim();
-
-                    if (!name || !exam) continue;
-
-                    var tur = parseNum(row[col.tur]);
-                    var ink = parseNum(row[col.ink]);
-                    var din = parseNum(row[col.din]);
-                    var ing = parseNum(row[col.ing]);
-                    var mat = parseNum(row[col.mat]);
-                    var fen = parseNum(row[col.fen]);
-                    var lgs = parseNum(row[col.lgs]);
-
-                    dataStore.push({
-                        name: name,
-                        exam: exam,
-                        tur: tur,
-                        ink: ink,
-                        din: din,
-                        ing: ing,
-                        mat: mat,
-                        fen: fen,
-                        lgs: lgs,
-                        total: tur + ink + din + ing + mat + fen,
-                        rowIndex: i
-                    });
-                }
-
-                if (!dataStore.length) {
-                    throw new Error('Veri okundu ancak kullanılabilir öğrenci kaydı bulunamadı. Sütun sırasını ve başlıkları kontrol edin.');
-                }
-
-                dropdownlariGuncelle();
-                analizGuncelle();
-            })
-            .catch(function (error) {
-                console.error(error);
-                dataStore = [];
-                dropdownlariGuncelle();
-                clearAllViews('Veri yüklenemedi.');
-                showError(
-                    '<strong>Veri bağlantı hatası.</strong><br>' +
-                    escapeHtml(error && error.message ? error.message : 'Bilinmeyen hata.') +
-                    '<br><br>iPhone\'da Safari kullanıyorsanız sayfayı yenileyin. Google Sheets dosyasının herkese açık ve "CSV olarak yayınlanmış" olması gerekir.'
-                );
-            })
-            .then(function () {
-                loading.style.display = 'none';
-            });
-    }
-
-    /* ============================================================
-       DROPDOWNLAR
-       ============================================================ */
-    function setSelectOptions(select, values, placeholder, specialOptionHtml) {
-        select.innerHTML = '';
-
-        var first = document.createElement('option');
-        first.value = '';
-        first.textContent = placeholder;
-        select.appendChild(first);
-
-        if (specialOptionHtml) {
-            var wrapper = document.createElement('div');
-            wrapper.innerHTML = specialOptionHtml;
-            select.appendChild(wrapper.firstChild);
-        }
-
-        values.forEach(function (value) {
-            var opt = document.createElement('option');
-            opt.value = value;
-            opt.textContent = value;
-            select.appendChild(opt);
-        });
-    }
-
-    function dropdownlariGuncelle() {
-        var selectStd = document.getElementById('studentFilter');
-        var uniqueNames = [];
-        var nameSeen = {};
-
-        dataStore.forEach(function (d) {
-            if (!nameSeen[d.name]) {
-                nameSeen[d.name] = true;
-                uniqueNames.push(d.name);
-            }
-        });
-        uniqueNames.sort(function (a, b) { return a.localeCompare(b, 'tr'); });
-
-        setSelectOptions(selectStd, uniqueNames, '-- Öğrenci Seçin --');
-
-        var selectEx = document.getElementById('examFilter');
-        var uniqueExams = [];
-        var examSeen = {};
-
-        dataStore.forEach(function (d) {
-            if (!examSeen[d.exam]) {
-                examSeen[d.exam] = true;
-                uniqueExams.push(d.exam);
-            }
-        });
-
-        var oldExam = selectEx.value;
-        selectEx.innerHTML = '';
-
-        var emptyOpt = document.createElement('option');
-        emptyOpt.value = '';
-        emptyOpt.textContent = '-- Sınav Seçin --';
-        selectEx.appendChild(emptyOpt);
-
-        var avgOpt = document.createElement('option');
-        avgOpt.value = 'GENEL_ORTALAMA';
-        avgOpt.textContent = '🏆 Tüm Sınavların Genel Ortalaması';
-        avgOpt.style.fontWeight = 'bold';
-        avgOpt.style.color = '#e67e22';
-        selectEx.appendChild(avgOpt);
-
-        uniqueExams.forEach(function (exam) {
-            var opt = document.createElement('option');
-            opt.value = exam;
-            opt.textContent = exam;
-            selectEx.appendChild(opt);
-        });
-
-        if (oldExam && examSeen[oldExam]) selectEx.value = oldExam;
-    }
-
-    /* ============================================================
-       GENEL SIRALAMA
-       ============================================================ */
-    function siralamaGuncelle() {
-        var exam = document.getElementById('examFilter').value;
-        var sortKey = document.getElementById('sortFilter').value;
-        var tbody = document.querySelector('#rankTable tbody');
-        var avgContainer = document.getElementById('examAveragesContainer');
-
-        if (!exam) {
-            tbody.innerHTML = '<tr><td colspan="10" class="empty-message">Lütfen bir sınav belirleyin.</td></tr>';
-            avgContainer.innerHTML = '';
-            avgContainer.style.display = 'none';
-            return;
-        }
-
-        var displayData = [];
-
-        if (exam === 'GENEL_ORTALAMA') {
-            var studentGroups = {};
-
-            dataStore.forEach(function (d) {
-                if (!studentGroups[d.name]) {
-                    studentGroups[d.name] = {
-                        tur: 0, ink: 0, din: 0, ing: 0,
-                        mat: 0, fen: 0, lgs: 0, total: 0, count: 0
-                    };
-                }
-
-                studentGroups[d.name].tur += d.tur;
-                studentGroups[d.name].ink += d.ink;
-                studentGroups[d.name].din += d.din;
-                studentGroups[d.name].ing += d.ing;
-                studentGroups[d.name].mat += d.mat;
-                studentGroups[d.name].fen += d.fen;
-                studentGroups[d.name].lgs += d.lgs;
-                studentGroups[d.name].total += d.total;
-                studentGroups[d.name].count++;
-            });
-
-            Object.keys(studentGroups).forEach(function (name) {
-                var g = studentGroups[name];
-                displayData.push({
-                    name: name,
-                    tur: g.tur / g.count,
-                    ink: g.ink / g.count,
-                    din: g.din / g.count,
-                    ing: g.ing / g.count,
-                    mat: g.mat / g.count,
-                    fen: g.fen / g.count,
-                    lgs: g.lgs / g.count,
-                    total: g.total / g.count
-                });
-            });
-        } else {
-            displayData = dataStore.filter(function (d) { return d.exam === exam; });
-        }
-
-        displayData.sort(function (a, b) {
-            var diff = Number(b[sortKey] || 0) - Number(a[sortKey] || 0);
-            if (diff !== 0) return diff;
-            return String(a.name).localeCompare(String(b.name), 'tr');
-        });
-
-        if (!displayData.length) {
-            tbody.innerHTML = '<tr><td colspan="10" class="empty-message">Bu seçim için veri bulunamadı.</td></tr>';
-            avgContainer.style.display = 'none';
-            return;
-        }
-
-        var count = displayData.length;
-        function avg(key) {
-            return (displayData.reduce(function (sum, d) { return sum + Number(d[key] || 0); }, 0) / count).toFixed(2);
-        }
-
-        avgContainer.innerHTML =
-            statCard('TÜR Ort.', avg('tur')) +
-            statCard('İNK Ort.', avg('ink')) +
-            statCard('DİN Ort.', avg('din')) +
-            statCard('İNG Ort.', avg('ing')) +
-            statCard('MAT Ort.', avg('mat')) +
-            statCard('FEN Ort.', avg('fen')) +
-            statCard('Top. Net', avg('total'), 'highlight', '#2980b9') +
-            statCard('LGS Puan', avg('lgs'), 'highlight', '#e67e22');
-
-        avgContainer.style.display = 'flex';
-
-        tbody.innerHTML = displayData.map(function (d, i) {
-            var name = escapeHtml(d.name);
-            return '<tr>' +
-                '<td>' + (i + 1) + '</td>' +
-                '<td style="text-align:left;font-weight:500;">' + name + '</td>' +
-                '<td style="' + sortStyle('tur', sortKey) + '">' + formatNumber(d.tur) + '</td>' +
-                '<td style="' + sortStyle('ink', sortKey) + '">' + formatNumber(d.ink) + '</td>' +
-                '<td style="' + sortStyle('din', sortKey) + '">' + formatNumber(d.din) + '</td>' +
-                '<td style="' + sortStyle('ing', sortKey) + '">' + formatNumber(d.ing) + '</td>' +
-                '<td style="' + sortStyle('mat', sortKey) + '">' + formatNumber(d.mat) + '</td>' +
-                '<td style="' + sortStyle('fen', sortKey) + '">' + formatNumber(d.fen) + '</td>' +
-                '<td style="color:#2980b9;' + sortStyle('total', sortKey) + '">' + formatNumber(d.total) + '</td>' +
-                '<td style="color:#e67e22;' + sortStyle('lgs', sortKey) + '">' + formatNumber(d.lgs) + '</td>' +
-                '</tr>';
-        }).join('');
-    }
-
-    function sortStyle(key, sortKey) {
-        return sortKey === key ? 'font-weight:bold;background:#fff9db;' : '';
-    }
-
-    function statCard(title, value, extraClass, valueColor) {
-        var cls = extraClass ? ' ' + extraClass : '';
-        var color = valueColor ? ' style="color:' + valueColor + ';"' : '';
-        return '<div class="stat-card' + cls + '"><h4>' + escapeHtml(title) + '</h4><div class="stat-value"' + color + '>' + escapeHtml(value) + '</div></div>';
-    }
-
-    /* ============================================================
-       BİREYSEL ANALİZ
-       ============================================================ */
-    function analizGuncelle() {
-        var student = document.getElementById('studentFilter').value;
-        var filtered = dataStore.filter(function (d) { return d.name === student; });
-        var tbody = document.querySelector('#resTable tbody');
-        var stats = document.getElementById('statsContainer');
-
-        if (!student) {
-            tbody.innerHTML = '<tr><td colspan="9" class="empty-message">Lütfen bir öğrenci seçin.</td></tr>';
-            stats.innerHTML = '';
-            drawEmptyChart('Öğrenci seçildiğinde grafik burada görünecek.');
-            return;
-        }
-
-        if (!filtered.length) {
-            tbody.innerHTML = '<tr><td colspan="9" class="empty-message">Öğrenci verisi bulunamadı.</td></tr>';
-            stats.innerHTML = '';
-            drawEmptyChart('Öğrenci verisi bulunamadı.');
-            return;
-        }
-
-        var schoolAvgData = filtered.map(function (studentExam) {
-            var allInExam = dataStore.filter(function (d) { return d.exam === studentExam.exam; });
-            if (!allInExam.length) return 0;
-            var sum = allInExam.reduce(function (acc, curr) { return acc + Number(curr[currentBranch] || 0); }, 0);
-            return sum / allInExam.length;
-        });
-
-        function getArrow(curr, prev) {
-            if (prev === null) return '';
-            if (curr > prev) return ' <span style="color:#27ae60;font-weight:bold;">↑</span>';
-            if (curr < prev) return ' <span style="color:#e74c3c;font-weight:bold;">↓</span>';
-            return ' <span style="color:#95a5a6;font-weight:bold;">−</span>';
-        }
-
-        tbody.innerHTML = filtered.map(function (d, i) {
-            var prev = i > 0 ? filtered[i - 1] : null;
-            return '<tr>' +
-                '<td>' + escapeHtml(d.exam) + '</td>' +
-                '<td>' + formatNumber(d.tur) + getArrow(d.tur, prev ? prev.tur : null) + '</td>' +
-                '<td>' + formatNumber(d.ink) + getArrow(d.ink, prev ? prev.ink : null) + '</td>' +
-                '<td>' + formatNumber(d.din) + getArrow(d.din, prev ? prev.din : null) + '</td>' +
-                '<td>' + formatNumber(d.ing) + getArrow(d.ing, prev ? prev.ing : null) + '</td>' +
-                '<td>' + formatNumber(d.mat) + getArrow(d.mat, prev ? prev.mat : null) + '</td>' +
-                '<td>' + formatNumber(d.fen) + getArrow(d.fen, prev ? prev.fen : null) + '</td>' +
-                '<td style="font-weight:bold;color:#2980b9;">' + formatNumber(d.total) + getArrow(d.total, prev ? prev.total : null) + '</td>' +
-                '<td style="font-weight:bold;color:#f39c12;">' + formatNumber(d.lgs) + getArrow(d.lgs, prev ? prev.lgs : null) + '</td>' +
-                '</tr>';
-        }).join('');
-
-        drawChart(filtered, schoolAvgData);
-
-        var last = filtered[filtered.length - 1];
-        var avg = filtered.reduce(function (sum, d) {
-            return sum + Number(d[currentBranch] || 0);
-        }, 0) / filtered.length;
-
-        var lastValue = formatNumber(last[currentBranch]);
-        var schoolLast = formatNumber(schoolAvgData[schoolAvgData.length - 1]);
-
-        stats.innerHTML =
-            statCard('Son Durum', lastValue) +
-            statCard('Öğrenci Ort.', formatNumber(avg)) +
-            statCard('Son Okul Ort.', schoolLast) +
-            statCard('Sınav Sayısı', String(filtered.length));
-    }
-
-    /* ============================================================
-       SAFARI/IOS DOSTU SVG GRAFİK
-       ============================================================ */
-    function svgEl(tag, attrs) {
-        var el = document.createElementNS('http://www.w3.org/2000/svg', tag);
-        Object.keys(attrs || {}).forEach(function (key) {
-            el.setAttribute(key, attrs[key]);
-        });
-        return el;
-    }
-
-    function clearChart() {
-        var svg = document.getElementById('devChart');
-        while (svg.firstChild) svg.removeChild(svg.firstChild);
-        return svg;
-    }
-
-    function addSvgText(svg, x, y, text, attrs) {
-        var t = svgEl('text', Object.assign({ x: x, y: y }, attrs || {}));
-        t.textContent = text;
-        svg.appendChild(t);
-        return t;
-    }
-
-    function drawEmptyChart(message) {
-        var svg = clearChart();
-        svg.appendChild(svgEl('rect', { x: 0, y: 0, width: 1000, height: 400, fill: '#ffffff' }));
-        addSvgText(svg, 500, 195, message, {
-            'text-anchor': 'middle',
-            'font-size': 18,
-            fill: '#95a5a6',
-            'font-family': '-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif'
-        });
-    }
-
-    function drawChart(filtered, schoolAvgData) {
-        var svg = clearChart();
-        var width = 1000;
-        var height = 400;
-        var pad = { left: 65, right: 25, top: 28, bottom: 65 };
-        var chartW = width - pad.left - pad.right;
-        var chartH = height - pad.top - pad.bottom;
-
-        var studentValues = filtered.map(function (d) { return Number(d[currentBranch] || 0); });
-        var allValues = studentValues.concat(schoolAvgData.map(function (v) { return Number(v || 0); }));
-
-        var maxValue = Math.max.apply(null, allValues.concat([1]));
-        var minValue = Math.min.apply(null, allValues.concat([0]));
-
-        if (maxValue === minValue) maxValue = minValue + 1;
-
-        var range = maxValue - minValue;
-        var margin = Math.max(range * 0.12, 1);
-        maxValue += margin;
-        minValue = Math.max(0, minValue - margin * 0.25);
-
-        function x(i) {
-            if (filtered.length === 1) return pad.left + chartW / 2;
-            return pad.left + (i * chartW / (filtered.length - 1));
-        }
-
-        function y(value) {
-            return pad.top + ((maxValue - value) / (maxValue - minValue)) * chartH;
-        }
-
-        svg.appendChild(svgEl('rect', { x: 0, y: 0, width: width, height: height, fill: '#ffffff' }));
-
-        var tickCount = 5;
-        for (var t = 0; t <= tickCount; t++) {
-            var tickValue = minValue + (maxValue - minValue) * (t / tickCount);
-            var yy = y(tickValue);
-
-            svg.appendChild(svgEl('line', {
-                x1: pad.left,
-                y1: yy,
-                x2: width - pad.right,
-                y2: yy,
-                stroke: COLORS.grid,
-                'stroke-width': 1
-            }));
-
-            addSvgText(svg, pad.left - 10, yy + 4, formatNumber(tickValue), {
-                'text-anchor': 'end',
-                'font-size': 12,
-                fill: COLORS.text,
-                'font-family': '-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif'
-            });
-        }
-
-        svg.appendChild(svgEl('line', {
-            x1: pad.left,
-            y1: pad.top,
-            x2: pad.left,
-            y2: height - pad.bottom,
-            stroke: '#b8c2cc',
-            'stroke-width': 1
-        }));
-
-        svg.appendChild(svgEl('line', {
-            x1: pad.left,
-            y1: height - pad.bottom,
-            x2: width - pad.right,
-            y2: height - pad.bottom,
-            stroke: '#b8c2cc',
-            'stroke-width': 1
-        }));
-
-        var studentPoints = studentValues.map(function (value, index) { return x(index) + ',' + y(value); }).join(' ');
-        var schoolPoints = schoolAvgData.map(function (value, index) { return x(index) + ',' + y(value); }).join(' ');
-
-        svg.appendChild(svgEl('polyline', {
-            points: studentPoints,
-            fill: 'none',
-            stroke: COLORS.student,
-            'stroke-width': 4,
-            'stroke-linecap': 'round',
-            'stroke-linejoin': 'round'
-        }));
-
-        svg.appendChild(svgEl('polyline', {
-            points: schoolPoints,
-            fill: 'none',
-            stroke: COLORS.school,
-            'stroke-width': 3,
-            'stroke-dasharray': '10 7',
-            'stroke-linecap': 'round',
-            'stroke-linejoin': 'round'
-        }));
-
-        filtered.forEach(function (d, index) {
-            var px = x(index);
-            var py = y(studentValues[index]);
-
-            svg.appendChild(svgEl('circle', {
-                cx: px,
-                cy: py,
-                r: 6,
-                fill: '#ffffff',
-                stroke: COLORS.student,
-                'stroke-width': 3
-            }));
-
-            var title = svgEl('title', {});
-            title.textContent = d.exam + ' — Öğrenci: ' + formatNumber(studentValues[index]) + ' | Okul: ' + formatNumber(schoolAvgData[index]);
-            svg.lastChild.appendChild(title);
-        });
-
-        schoolAvgData.forEach(function (value, index) {
-            svg.appendChild(svgEl('circle', {
-                cx: x(index),
-                cy: y(value),
-                r: 4,
-                fill: '#ffffff',
-                stroke: COLORS.school,
-                'stroke-width': 2
-            }));
-        });
-
-        filtered.forEach(function (d, index) {
-            var label = String(d.exam || '');
-            if (label.length > 16) label = label.substring(0, 15) + '…';
-
-            var fontSize = filtered.length > 8 ? 10 : 11;
-            var anchor = 'middle';
-
-            addSvgText(svg, x(index), height - pad.bottom + 25, label, {
-                'text-anchor': anchor,
-                'font-size': fontSize,
-                fill: COLORS.text,
-                'font-family': '-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif'
-            });
-        });
-
-        addSvgText(svg, width / 2, 20, branchNames[currentBranch] + ' Gelişim Grafiği', {
-            'text-anchor': 'middle',
-            'font-size': 15,
-            'font-weight': 'bold',
-            fill: '#2c3e50',
-            'font-family': '-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif'
-        });
-    }
-
-    /* ============================================================
-       SEKME / BRANŞ
-       ============================================================ */
-    function switchMainTab(tab) {
-        document.querySelectorAll('.view-section').forEach(function (section) {
-            section.classList.remove('active');
-        });
-
-        document.querySelectorAll('.main-tabs button').forEach(function (button) {
-            button.classList.remove('active');
-        });
-
-        if (tab === 'analiz') {
-            document.getElementById('analizView').classList.add('active');
-            document.getElementById('tabAnalizBtn').classList.add('active');
-        } else {
-            document.getElementById('siralamaView').classList.add('active');
-            document.getElementById('tabSiralamaBtn').classList.add('active');
-            siralamaGuncelle();
-        }
-    }
-
-    function setBranch(key, btn) {
-        currentBranch = key;
-        document.querySelectorAll('#branchTabs button').forEach(function (b) {
-            b.classList.remove('active');
-        });
-        btn.classList.add('active');
-        analizGuncelle();
-    }
-
-    /* ============================================================
-       CSV RAPORU
-       ============================================================ */
-    function excelRaporAl() {
-        if (!dataStore.length) {
-            alert('Önce verilerin yüklenmesini bekleyin.');
-            return;
-        }
-
-        var lines = [];
-        lines.push('Öğrenci;Sınav;Türkçe;İnkılap;Din;İngilizce;Matematik;Fen;Toplam Net;LGS Puanı');
-
-        dataStore.forEach(function (d) {
-            lines.push([
-                csvEscape(d.name),
-                csvEscape(d.exam),
-                formatNumber(d.tur),
-                formatNumber(d.ink),
-                formatNumber(d.din),
-                formatNumber(d.ing),
-                formatNumber(d.mat),
-                formatNumber(d.fen),
-                formatNumber(d.total),
-                formatNumber(d.lgs)
-            ].join(';'));
-        });
-
-        var csv = '\uFEFF' + lines.join('\r\n');
-        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-
-        try {
-            var url = URL.createObjectURL(blob);
-            var link = document.createElement('a');
-            link.href = url;
-            link.download = 'LGS_Analiz_Raporu.csv';
-            link.style.display = 'none';
-            document.body.appendChild(link);
-            link.click();
-            setTimeout(function () {
-                URL.revokeObjectURL(url);
-                if (link.parentNode) link.parentNode.removeChild(link);
-            }, 1000);
-        } catch (e) {
-            window.open('data:text/csv;charset=utf-8,' + encodeURIComponent(csv), '_blank');
-        }
-    }
+}
+
+function setBranch(key,btn) {
+    currentBranch=key;
+    document.querySelectorAll('#branchTabs button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    analizGuncelle();
+}
+
+function csvEscape(v) {
+    const s=String(v==null?'':v);
+    return /[;"\n\r]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
+}
+
+function csvRaporAl() {
+    if(!dataStore.length){ alert('İndirilecek veri bulunamadı.'); return; }
+    let csv='\uFEFFÖğrenci;Sınav;Türkçe;İnkılap;Din;İngilizce;Matematik;Fen;Toplam Net;LGS Puanı\n';
+    dataStore.forEach(d=>{
+        csv += [
+            d.name,d.exam,d.tur,d.ink,d.din,d.ing,d.mat,d.fen,d.total,d.lgs
+        ].map(csvEscape).join(';')+'\n';
+    });
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url; a.download='LGS_Analiz_Raporu.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+window.addEventListener('DOMContentLoaded',verileriGetir);
 </script>
 </body>
 </html>
