@@ -1,0 +1,72 @@
+
+name: Google Sheets Verisini Güncelle ve GitHub Pages Yayınla
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: "*/15 * * * *"
+      timezone: "Europe/Istanbul"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Depoyu indir
+        uses: actions/checkout@v4
+
+      - name: Google Sheets CSV verisini indir
+        env:
+          SHEET_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRv-FWL1F43vukW6ycM14PaawZ4vyN1_ZugKabHtsHabAgYCCYeVU6ohMEH79eFXYGTSK_TyhnYp6Qd/pub?output=csv"
+        run: |
+          set -e
+          curl --fail --location --silent --show-error \
+            --retry 4 --retry-delay 3 \
+            "$SHEET_URL&cache_bust=$(date +%s)" \
+            -o data.csv
+
+          if [ ! -s data.csv ]; then
+            echo "HATA: Google Sheets boş veri döndürdü."
+            exit 1
+          fi
+
+          if head -c 100 data.csv | grep -qiE '<!DOCTYPE|<html'; then
+            echo "HATA: Google Sheets CSV yerine HTML döndürdü."
+            exit 1
+          fi
+
+          LINES=$(wc -l < data.csv)
+          if [ "$LINES" -lt 2 ]; then
+            echo "HATA: data.csv içinde öğrenci verisi yok."
+            exit 1
+          fi
+
+          echo "Google Sheets verisi başarıyla alındı. Satır sayısı: $LINES"
+
+      - name: GitHub Pages yapılandırmasını hazırla
+        uses: actions/configure-pages@v5
+
+      - name: Pages dosyalarını paketle
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "."
+
+      - name: GitHub Pages'e yayınla
+        id: deployment
+        uses: actions/deploy-pages@v4
