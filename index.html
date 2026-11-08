@@ -38,6 +38,7 @@ button:active { opacity: .8; }
 .btn-header { padding: 7px 12px; font-size: 11px; width: 145px; text-align: left; }
 .btn-refresh { background: #27ae60; color: white; }
 .btn-report { background: #8e44ad; color: white; }
+.btn-import { background: #2980b9; color: white; }
 .main-tabs { display: flex; gap: 15px; margin-bottom: 25px; justify-content: center; }
 .main-tabs button { background: #ecf0f1; color: #2c3e50; padding: 12px 25px; min-width: 180px; }
 .main-tabs button.active { background: #2c3e50; color: white; }
@@ -89,8 +90,20 @@ footer { text-align: center; padding: 25px 10px; margin-top: 25px; font-size: 12
     header h1 { font-size: 20px; }
     header h2 { font-size: 13px; }
     .main-content { padding: 15px; }
-    .main-tabs { flex-direction: column; align-items: stretch; gap: 8px; }
-    .main-tabs button { min-width: 100%; padding: 11px 15px; }
+    /* Mobilde sekme menüsü iki satırlı ve sabit kalır; içerik değişince kullanıcı
+       hangi bölümde olduğunu görür ve diğer bölümlere kolayca geçebilir. */
+    .main-tabs {
+        position: sticky; top: 0; z-index: 50;
+        display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: stretch; gap: 7px;
+        padding: 8px 0 10px; margin: -4px 0 14px;
+        background: #fff; box-shadow: 0 5px 9px rgba(44,62,80,.08);
+    }
+    .main-tabs button {
+        min-width: 0; width: 100%; min-height: 44px;
+        padding: 9px 7px; font-size: 12px; line-height: 1.25;
+    }
+    .view-section { scroll-margin-top: 116px; }
     .branch-tabs { grid-template-columns: repeat(2, 1fr); }
     .ranking-filters, .individual-filters { grid-template-columns: 1fr; gap: 8px; }
     .stats-container { gap: 8px; }
@@ -106,7 +119,9 @@ footer { text-align: center; padding: 25px 10px; margin-top: 25px; font-size: 12
 <header>
     <div class="header-controls">
         <button class="btn-header btn-refresh" type="button" onclick="verileriGetir()">🔄 Verileri Yenile</button>
+        <button class="btn-header btn-import" type="button" onclick="csvDosyasiSec()">📂 CSV Yükle</button>
         <button class="btn-header btn-report" type="button" onclick="csvRaporAl()">📥 CSV İndir</button>
+        <input id="csvFileInput" type="file" accept=".csv,text/csv,.txt,text/plain" style="display:none" onchange="csvDosyasiYukle(event)">
     </div>
     <h1>DENEME SINAVI ANALİZLERİ</h1>
     <h2>8. SINIFLAR</h2>
@@ -247,7 +262,7 @@ Okul Psikolojik Danışmanı Sezer TEKİN tarafından dijital araçlar kullanıl
   A Öğrenci Adı Soyadı | B Sınıfı | C Sınav Adı | D Türkçe | E Sosyal/İnkılap
   F Din | G İngilizce | H Matematik | I Fen | J LGS Puanı
 */
-const DATA_URL = 'data.csv';
+const DATA_URL = './data.csv';
 const ALL_CLASSES = '__ALL_CLASSES__';
 // Otomatik öğrenci inceleme uyarısı için toplam net düşüş eşiği.
 const STUDENT_REVIEW_DROP_THRESHOLD = 3;
@@ -332,68 +347,106 @@ function hideError() {
     box.style.display = 'none';
 }
 
+function veriyiIsle(raw, sourceLabel) {
+    raw = String(raw || '');
+    if (!raw.trim()) throw new Error('CSV dosyası boş.');
+    if (/^\s*<(?:!DOCTYPE|html)/i.test(raw)) throw new Error('CSV yerine HTML sayfası geldi. Seçtiğiniz dosyanın gerçekten data.csv olduğundan emin olun.');
+
+    const rows = parseCSV(raw);
+    if (rows.length < 2) throw new Error('CSV içinde henüz öğrenci verisi bulunamadı.');
+
+    const parsed = [];
+    for (let i = 1; i < rows.length; i++) {
+        const c = rows[i];
+        if (c.length < 10) continue;
+        const name = String(c[0] || '').trim();
+        const className = String(c[1] || '').trim() || 'Sınıfı Belirtilmemiş';
+        const exam = String(c[2] || '').trim();
+        if (!name || !exam) continue;
+
+        const tur = parseNum(c[3]);
+        const ink = parseNum(c[4]);
+        const din = parseNum(c[5]);
+        const ing = parseNum(c[6]);
+        const mat = parseNum(c[7]);
+        const fen = parseNum(c[8]);
+        const lgs = parseNum(c[9]);
+        parsed.push({
+            name, className, exam, tur, ink, din, ing, mat, fen, lgs,
+            total: tur + ink + din + ing + mat + fen
+        });
+    }
+    if (!parsed.length) {
+        throw new Error('Kullanılabilir öğrenci kaydı bulunamadı. CSV sütun sırası şu şekilde olmalı: Öğrenci Adı Soyadı, Sınıfı, Sınav Adı, Türkçe, Sosyal/İnkılap, Din, İngilizce, Matematik, Fen, LGS Puanı.');
+    }
+
+    dataStore = parsed;
+    dropdownlariGuncelle();
+    ozetGuncelle();
+    dersAnaliziGuncelle();
+    analizGuncelle();
+    siralamaGuncelle();
+    hideError();
+    console.info('Veriler yüklendi:', sourceLabel || 'data.csv', parsed.length, 'kayıt');
+}
+
+function csvDosyasiSec() {
+    document.getElementById('csvFileInput').click();
+}
+
+async function csvDosyasiYukle(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    const loading = document.getElementById('loadingMsg');
+    loading.textContent = '⏳ Seçilen CSV dosyası okunuyor...';
+    loading.style.display = 'block';
+    try {
+        const raw = await file.text();
+        veriyiIsle(raw, file.name);
+        loading.textContent = '⏳ Veriler yükleniyor, lütfen bekleyin...';
+    } catch (e) {
+        console.error(e);
+        showError('CSV dosyası okunamadı: ' + e.message);
+    } finally {
+        loading.style.display = 'none';
+        // Aynı dosyanın yeniden seçilmesi hâlinde change olayının tekrar çalışmasını sağlar.
+        event.target.value = '';
+    }
+}
+
 async function verileriGetir() {
     const loading = document.getElementById('loadingMsg');
+    loading.textContent = '⏳ Veriler yükleniyor, lütfen bekleyin...';
     loading.style.display = 'block';
     hideError();
+
+    // Tarayıcılar file:// adreslerinden başka yerel dosyaların fetch ile okunmasına çoğunlukla izin vermez.
+    if (window.location.protocol === 'file:') {
+        showError('Program bilgisayardan doğrudan açılmış. Tarayıcı bu durumda data.csv dosyasını otomatik okuyamaz. Üstteki “📂 CSV Yükle” düğmesine basarak data.csv dosyasını seçin.');
+        loading.style.display = 'none';
+        return;
+    }
+
     try {
-        const response = await fetch(DATA_URL + '?v=' + Date.now(), {
-            method: 'GET', cache: 'no-store', credentials: 'same-origin'
+        const dataUrl = new URL(DATA_URL, window.location.href);
+        dataUrl.searchParams.set('v', Date.now());
+        const response = await fetch(dataUrl.toString(), {
+            method: 'GET',
+            cache: 'no-store',
+            credentials: 'same-origin'
         });
         if (!response.ok) throw new Error('data.csv alınamadı (HTTP ' + response.status + ').');
         const raw = await response.text();
-        if (!raw.trim()) throw new Error('data.csv boş.');
-        if (/^\s*<(?:!DOCTYPE|html)/i.test(raw)) throw new Error('data.csv yerine HTML sayfası geldi.');
-
-        const rows = parseCSV(raw);
-        if (rows.length < 2) throw new Error('Henüz öğrenci verisi yayınlanmamış.');
-
-        const parsed = [];
-        for (let i = 1; i < rows.length; i++) {
-            const c = rows[i];
-            if (c.length < 10) continue;
-            const name = String(c[0] || '').trim();
-            const className = String(c[1] || '').trim() || 'Sınıfı Belirtilmemiş';
-            const exam = String(c[2] || '').trim();
-            if (!name || !exam) continue;
-
-            const tur = parseNum(c[3]);
-            const ink = parseNum(c[4]);
-            const din = parseNum(c[5]);
-            const ing = parseNum(c[6]);
-            const mat = parseNum(c[7]);
-            const fen = parseNum(c[8]);
-            const lgs = parseNum(c[9]);
-            parsed.push({
-                name, className, exam, tur, ink, din, ing, mat, fen, lgs,
-                total: tur + ink + din + ing + mat + fen
-            });
-        }
-        if (!parsed.length) throw new Error('Kullanılabilir öğrenci kaydı bulunamadı. Sütun sırasını kontrol edin.');
-
-        dataStore = parsed;
-        dropdownlariGuncelle();
-        ozetGuncelle();
-        dersAnaliziGuncelle();
-        analizGuncelle();
-        siralamaGuncelle();
+        veriyiIsle(raw, dataUrl.pathname);
     } catch (e) {
         console.error(e);
-        dataStore = [];
-        document.getElementById('studentFilter').innerHTML = '<option value="">-- Veri alınamadı --</option>';
-        document.getElementById('examFilter').innerHTML = '<option value="">-- Veri alınamadı --</option>';
-        document.getElementById('classFilter').innerHTML = '<option value="">-- Veri alınamadı --</option>';
-        document.querySelector('#resTable tbody').innerHTML = '<tr><td colspan="9">Veriler yüklenemedi.</td></tr>';
-        document.querySelector('#rankTable tbody').innerHTML = '<tr><td colspan="11">Veriler yüklenemedi.</td></tr>';
-        document.getElementById('statsContainer').innerHTML = '';
-        document.getElementById('summaryStatsContainer').innerHTML = '';
-        document.getElementById('summaryInsight').textContent = 'Özet oluşturulamadı.';
-        document.querySelector('#summaryBranchTable tbody').innerHTML = '<tr><td colspan="4">Veriler yüklenemedi.</td></tr>';
-        document.querySelector('#subjectOverallTable tbody').innerHTML = '<tr><td colspan="4">Veriler yüklenemedi.</td></tr>';
-        document.querySelector('#classCompareTable tbody').innerHTML = '<tr><td colspan="9">Veriler yüklenemedi.</td></tr>';
-        document.getElementById('examAveragesContainer').style.display = 'none';
-        drawEmptyChart('Veri yüklenemedi');
-        showError('Veri yüklenemedi: ' + e.message);
+        let message = 'Veri dosyasına otomatik erişilemedi. ';
+        if (e && e.message === 'Failed to fetch') {
+            message += 'Sunucuya erişilemiyor veya data.csv dosyası bu sayfanın bulunduğu yayın klasöründe değil. GitHub Pages kullanıyorsanız HTML dosyası ile data.csv aynı klasörde yayımlanmalı. Geçici çözüm olarak “📂 CSV Yükle” düğmesiyle data.csv dosyasını seçebilirsiniz.';
+        } else {
+            message += e.message + ' HTML dosyası ile data.csv dosyasının aynı yayın klasöründe olduğunu kontrol edin. Dilerseniz “📂 CSV Yükle” düğmesiyle CSV dosyasını elle seçebilirsiniz.';
+        }
+        showError(message);
     } finally {
         loading.style.display = 'none';
     }
@@ -860,6 +913,17 @@ function switchMainTab(tab) {
     if (tab === 'ders') dersAnaliziGuncelle();
     if (tab === 'analiz') analizGuncelle();
     if (tab === 'siralama') siralamaGuncelle();
+
+    // Mobilde sekme seçildiğinde seçilen bölüm ekrana kaydırılır.
+    // Menü sticky kaldığı için kullanıcı diğer sekmelere de hemen geçebilir.
+    if (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {
+        window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => {
+                const view = document.getElementById(selected[0]);
+                if (view) view.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    }
 }
 
 function setBranch(key, button) {
