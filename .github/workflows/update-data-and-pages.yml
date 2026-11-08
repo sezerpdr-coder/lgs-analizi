@@ -1,4 +1,3 @@
-
 name: Google Sheets Verisini Güncelle ve GitHub Pages Yayınla
 
 on:
@@ -6,7 +5,11 @@ on:
   push:
     branches:
       - main
-  
+  schedule:
+    # Her 15 dakikada bir kontrol eder.
+    # GitHub Actions saatleri UTC'dir; timezone ile Türkiye saati kullanılır.
+    - cron: "*/15 * * * *"
+      timezone: "Europe/Istanbul"
 
 permissions:
   contents: read
@@ -29,9 +32,9 @@ jobs:
       - name: Depoyu indir
         uses: actions/checkout@v4
 
-      - name: Google Sheets CSV verisini indir
+      - name: Yeni Google Sheets CSV verisini indir
         env:
-          SHEET_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRv-FWL1F43vukW6ycM14PaawZ4vyN1_ZugKabHtsHabAgYCCYeVU6ohMEH79eFXYGTSK_TyhnYp6Qd/pub?output=csv"
+          SHEET_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRJGrjAenuW9Z9K_sFKENg1t4LtHjUIYWh1rwQFZin1IA_dnwIIGllmTmoy-hOiwAKSgsOqAxwF_cG0/pub?output=csv"
         run: |
           set -e
           curl --fail --location --silent --show-error \
