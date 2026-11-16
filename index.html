@@ -67,8 +67,7 @@ th { background: #f8f9fa; color: #2c3e50; font-weight: bold; }
 .class-analysis-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
 .class-analysis-filters select { margin-bottom: 0; }
 .analysis-subtitle { margin: 22px 0 8px; color: #34495e; font-size: 16px; }
-.chart-box.branch-chart-box { height: 320px; }
-#classTrendChart, #classBranchChart { width: 100%; height: 100%; display: block; overflow: visible; }
+#classTrendChart { width: 100%; height: 100%; display: block; overflow: visible; }
 .class-analysis-note { color: #7f8c8d; font-size: 12px; margin: 8px 0 0; }
 .view-section { display: none; }
 .view-section.active { display: block; }
@@ -209,22 +208,14 @@ footer { text-align: center; padding: 25px 10px; margin-top: 25px; font-size: 12
             </div>
         </div>
 
-        <h3 id="classAnalysisHeading" class="analysis-subtitle">Sınıfın son sınav ortalamaları</h3>
-        <div class="stats-container" id="classStatsContainer"></div>
-
-        <h3 class="analysis-subtitle">Sınavlara göre gelişim</h3>
+        <h3 class="analysis-subtitle">Sınavlara Göre Ortalama Değişimi</h3>
         <div class="chart-box">
             <svg id="classTrendChart" viewBox="0 0 1000 400" preserveAspectRatio="none" role="img" aria-label="Sınıf ortalamalarının sınavlara göre değişim grafiği"></svg>
         </div>
         <div class="chart-legend" id="classTrendLegend"></div>
-        <p class="class-analysis-note">Belirli bir sınıf seçildiğinde karşılaştırma çizgisi, aynı sınavdaki tüm okul öğrencilerinin ortalamasını gösterir.</p>
+        <p class="class-analysis-note">Bir sınıf seçildiğinde kesikli çizgi, aynı sınavdaki okul ortalamasını gösterir. Tüm Sınıflar seçildiğinde yalnızca genel ortalama görüntülenir.</p>
 
-        <h3 class="analysis-subtitle">Son sınav branş ortalamaları</h3>
-        <div class="chart-box branch-chart-box">
-            <svg id="classBranchChart" viewBox="0 0 1000 360" preserveAspectRatio="none" role="img" aria-label="Son sınav branş ortalamaları sütun grafiği"></svg>
-        </div>
-
-        <h3 class="analysis-subtitle">Sınav bazlı sınıf ortalamaları</h3>
+        <h3 class="analysis-subtitle">Sınav Bazlı Sınıf Ortalamaları</h3>
         <div class="table-container">
             <table id="classTrendTable">
                 <thead><tr>
@@ -387,10 +378,8 @@ async function verileriGetir() {
         document.querySelector('#classTrendTable tbody').innerHTML = '<tr><td colspan="10">Veriler yüklenemedi.</td></tr>';
         document.getElementById('statsContainer').innerHTML = '';
         document.getElementById('examAveragesContainer').style.display = 'none';
-        document.getElementById('classStatsContainer').innerHTML = '';
         drawEmptyChart('Veri yüklenemedi');
         drawEmptySvg('classTrendChart', 'Veri yüklenemedi');
-        drawEmptySvg('classBranchChart', 'Veri yüklenemedi');
         showError('Veri yüklenemedi: ' + e.message);
     } finally {
         loading.style.display = 'none';
@@ -588,17 +577,12 @@ function ortalama(records, key) {
 function sinifAnaliziGuncelle() {
     const classSelect = document.getElementById('classAnalysisFilter');
     const selectedClass = classSelect.value;
-    const stats = document.getElementById('classStatsContainer');
     const tbody = document.querySelector('#classTrendTable tbody');
-    const heading = document.getElementById('classAnalysisHeading');
     const legend = document.getElementById('classTrendLegend');
 
     if (!dataStore.length || !selectedClass) {
-        heading.textContent = 'Sınıfın son sınav ortalamaları';
-        stats.innerHTML = '';
         tbody.innerHTML = '<tr><td colspan="10">Lütfen bir sınıf seçin.</td></tr>';
         drawEmptySvg('classTrendChart', selectedClass ? 'Veri bulunamadı' : 'Sınıf seçin');
-        drawEmptySvg('classBranchChart', selectedClass ? 'Veri bulunamadı' : 'Sınıf seçin');
         legend.innerHTML = '';
         return;
     }
@@ -608,11 +592,8 @@ function sinifAnaliziGuncelle() {
         : dataStore.filter(d => d.className === selectedClass);
 
     if (!selectedRecords.length) {
-        heading.textContent = 'Sınıfın son sınav ortalamaları';
-        stats.innerHTML = '';
         tbody.innerHTML = '<tr><td colspan="10">Seçilen sınıfa ait kayıt bulunamadı.</td></tr>';
         drawEmptySvg('classTrendChart', 'Kayıt bulunamadı');
-        drawEmptySvg('classBranchChart', 'Kayıt bulunamadı');
         legend.innerHTML = '';
         return;
     }
@@ -636,31 +617,17 @@ function sinifAnaliziGuncelle() {
 
     if (!summaries.length) {
         tbody.innerHTML = '<tr><td colspan="10">Seçilen sınıf için sınav ortalaması hesaplanamadı.</td></tr>';
-        stats.innerHTML = '';
         drawEmptySvg('classTrendChart', 'Grafik verisi bulunamadı');
-        drawEmptySvg('classBranchChart', 'Grafik verisi bulunamadı');
         legend.innerHTML = '';
         return;
     }
-
-    const last = summaries[summaries.length - 1];
-    heading.textContent = `${selectedClass === ALL_CLASSES ? 'Tüm Sınıflar' : selectedClass} — ${last.exam} sınavı ortalamaları`;
-    stats.innerHTML = `
-        <div class="stat-card"><h4>Türkçe Ort.</h4><div class="stat-value">${last.tur.toFixed(2)}</div></div>
-        <div class="stat-card"><h4>Sosyal/İnkılap Ort.</h4><div class="stat-value">${last.ink.toFixed(2)}</div></div>
-        <div class="stat-card"><h4>Din Ort.</h4><div class="stat-value">${last.din.toFixed(2)}</div></div>
-        <div class="stat-card"><h4>İngilizce Ort.</h4><div class="stat-value">${last.ing.toFixed(2)}</div></div>
-        <div class="stat-card"><h4>Matematik Ort.</h4><div class="stat-value">${last.mat.toFixed(2)}</div></div>
-        <div class="stat-card"><h4>Fen Ort.</h4><div class="stat-value">${last.fen.toFixed(2)}</div></div>
-        <div class="stat-card highlight"><h4>Genel Net Ort.</h4><div class="stat-value" style="color:#2980b9">${last.total.toFixed(2)}</div></div>
-        <div class="stat-card highlight"><h4>LGS Puan Ort.</h4><div class="stat-value" style="color:#e67e22">${last.lgs.toFixed(2)}</div></div>
-        <div class="stat-card"><h4>Katılan Öğrenci</h4><div class="stat-value">${last.count}</div></div>`;
 
     const metricKey = document.getElementById('classMetricFilter').value || 'total';
     const metricTitle = branchNames[metricKey] || 'Genel Net';
     const classValues = summaries.map(item => item[metricKey]);
     const schoolValues = summaries.map(item => item.school[metricKey]);
     const showSchoolComparison = selectedClass !== ALL_CLASSES;
+
     drawClassTrendChart(
         summaries.map(item => item.exam),
         classValues,
@@ -672,8 +639,6 @@ function sinifAnaliziGuncelle() {
     legend.innerHTML = showSchoolComparison
         ? '<span class="legend-item"><span class="legend-line"></span> Seçilen Sınıf</span><span class="legend-item"><span class="legend-line school"></span> Okul Ortalaması</span>'
         : '<span class="legend-item"><span class="legend-line"></span> Tüm Sınıflar Ortalaması</span>';
-
-    drawClassBranchChart(last, last.exam);
 
     tbody.innerHTML = summaries.map(item => `
         <tr>
@@ -747,37 +712,6 @@ function drawClassTrendChart(labels, classValues, schoolValues, title, showSchoo
     svg.innerHTML = drawing;
 }
 
-function drawClassBranchChart(summary, examName) {
-    const svg = document.getElementById('classBranchChart');
-    const W = 1000, H = 360, left = 65, right = 25, top = 40, bottom = 75;
-    const plotW = W - left - right, plotH = H - top - bottom;
-    const values = CLASS_METRICS.map(metric => summary[metric.key]);
-    const maxValue = Math.max(1, ...values);
-    const yMax = Math.ceil(maxValue * 1.15);
-    const y = value => top + plotH - (value / yMax) * plotH;
-    const groupW = plotW / CLASS_METRICS.length;
-    const barW = Math.min(90, groupW * 0.55);
-    let drawing = '';
-
-    for (let i = 0; i <= 5; i++) {
-        const value = yMax * (i / 5);
-        const yy = y(value);
-        drawing += `<line x1="${left}" y1="${yy}" x2="${W - right}" y2="${yy}" stroke="#e9ecef" stroke-width="1"/>`;
-        drawing += `<text x="${left - 10}" y="${yy + 4}" text-anchor="end" fill="#6c757d" font-size="12">${value.toFixed(1)}</text>`;
-    }
-    drawing += `<text x="${W / 2}" y="20" text-anchor="middle" fill="#2c3e50" font-size="15" font-weight="bold">${escapeHtml(examName)} — branş net ortalamaları</text>`;
-
-    CLASS_METRICS.forEach((metric, index) => {
-        const center = left + groupW * (index + 0.5);
-        const value = summary[metric.key];
-        const barHeight = top + plotH - y(value);
-        const x = center - barW / 2;
-        drawing += `<rect x="${x}" y="${y(value)}" width="${barW}" height="${Math.max(0, barHeight)}" rx="5" fill="${metric.color}" opacity="0.88"/>`;
-        drawing += `<text x="${center}" y="${Math.max(30, y(value) - 8)}" text-anchor="middle" fill="#2c3e50" font-size="13" font-weight="bold">${value.toFixed(2)}</text>`;
-        drawing += `<text x="${center}" y="${H - 30}" text-anchor="middle" fill="#6c757d" font-size="12">${escapeHtml(metric.label)}</text>`;
-    });
-    svg.innerHTML = drawing;
-}
 
 function getArrow(current, previous) {
     if (previous === null) return '';
