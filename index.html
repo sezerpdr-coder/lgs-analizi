@@ -43,13 +43,12 @@ body {
     .grade-button { min-height: 78px; font-size: 19px; }
 }
 header {
-    background: #2c3e50; color: white; padding: 22px 190px 22px 20px; border-radius: 10px;
-    text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,.1); position: relative;
-    min-height: 100px; margin-bottom: 20px;
+    background: #2c3e50; color: white; padding: 20px; border-radius: 10px; text-align: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,.1); position: relative; min-height: 80px; margin-bottom: 20px;
 }
 .header-controls {
-    position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
-    display: flex; flex-direction: column; gap: 5px; width: 165px;
+    position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
+    display: flex; flex-direction: column; gap: 5px;
 }
 header h1 { margin: 0; font-size: 24px; }
 header h2 { margin: 5px 0 0; font-size: 15px; font-weight: 300; color: #ecf0f1; opacity: .9; }
@@ -61,11 +60,9 @@ select {
 }
 button { border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: background .2s, opacity .2s; -webkit-tap-highlight-color: transparent; }
 button:active { opacity: .8; }
-button:disabled { cursor: wait; opacity: .65; }
-.btn-header { padding: 7px 10px; font-size: 11px; width: 100%; text-align: left; }
+.btn-header { padding: 7px 12px; font-size: 11px; width: 145px; text-align: left; }
 .btn-refresh { background: #27ae60; color: white; }
 .btn-report { background: #8e44ad; color: white; }
-.btn-switch { background: #526779; color: white; }
 .main-tabs { display: flex; gap: 15px; margin-bottom: 25px; justify-content: center; }
 .main-tabs button { background: #ecf0f1; color: #2c3e50; padding: 12px 25px; min-width: 180px; }
 .main-tabs button.active { background: #2c3e50; color: white; }
@@ -82,34 +79,31 @@ table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 800p
 th, td { border: 1px solid #eee; padding: 12px 8px; text-align: center; white-space: nowrap; }
 th { background: #f8f9fa; color: #2c3e50; font-weight: bold; }
 .chart-box { margin-top: 10px; height: 350px; width: 100%; position: relative; }
-#devChart, #classTrendChart { width: 100%; height: 100%; display: block; overflow: visible; }
-.chart-legend { display: flex; justify-content: center; gap: 20px; margin-top: 4px; font-size: 12px; flex-wrap: wrap; }
+#devChart { width: 100%; height: 100%; display: block; overflow: visible; }
+.chart-legend { display: flex; justify-content: center; gap: 20px; margin-top: 4px; font-size: 12px; }
 .legend-item { display: flex; align-items: center; gap: 5px; }
 .legend-line { width: 28px; height: 3px; background: #3498db; display: inline-block; }
 .legend-line.school { background: repeating-linear-gradient(90deg, #e67e22 0 6px, transparent 6px 10px); }
 .filter-section { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee; }
 .ranking-filters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 15px; }
 .ranking-filters select { margin-bottom: 0; }
-.individual-filters, .class-analysis-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
-.individual-filters select, .class-analysis-filters select { margin-bottom: 0; }
+.individual-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
+.individual-filters select { margin-bottom: 0; }
+.class-analysis-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
+.class-analysis-filters select { margin-bottom: 0; }
 .analysis-subtitle { margin: 22px 0 8px; color: #34495e; font-size: 16px; }
-.class-analysis-note { color: #7f8c8d; font-size: 12px; margin: 8px 0 0; line-height: 1.5; }
+#classTrendChart { width: 100%; height: 100%; display: block; overflow: visible; }
+.class-analysis-note { color: #7f8c8d; font-size: 12px; margin: 8px 0 0; }
 .view-section { display: none; }
 .view-section.active { display: block; }
 .loading-overlay { display: none; text-align: center; padding: 20px; font-weight: bold; color: #2980b9; }
 .error-box { display: none; margin-bottom: 15px; padding: 12px; border-radius: 7px; background: #fdecea; border: 1px solid #f5c6cb; color: #a94442; font-size: 13px; }
-/* LGS ile ilgili hücreler 8. sınıf dışında tüm tablolarda gizlenir. */
-#appShell:not(.grade-8) .lgs-only,
-.lgs-only[hidden] { display: none !important; }
 footer { text-align: center; padding: 25px 10px; margin-top: 25px; font-size: 12px; color: #7f8c8d; border-top: 1px solid #ddd; }
 @media (max-width: 768px) {
     body { padding: 10px; }
-    header { padding: 62px 10px 18px; min-height: 130px; }
-    .header-controls {
-        position: absolute; top: 10px; left: 8px; right: 8px; transform: none;
-        flex-direction: row; justify-content: center; width: auto; gap: 6px;
-    }
-    .btn-header { width: auto; flex: 1 1 0; max-width: 180px; text-align: center; font-size: 10px; padding: 7px 6px; }
+    header { padding: 62px 15px 18px; min-height: 130px; }
+    .header-controls { position: absolute; top: 10px; left: 0; right: 0; transform: none; flex-direction: row; justify-content: center; width: 100%; gap: 6px; }
+    .btn-header { width: auto; font-size: 10px; padding: 7px 10px; }
     header h1 { font-size: 20px; }
     header h2 { font-size: 13px; }
     .main-content { padding: 15px; }
@@ -123,11 +117,7 @@ footer { text-align: center; padding: 25px 10px; margin-top: 25px; font-size: 12
     .stat-value { font-size: 17px; }
     .chart-box { height: 300px; }
 }
-@media (max-width: 430px) {
-    .chart-box { height: 270px; }
-    .chart-legend { gap: 10px; font-size: 11px; }
-    .btn-header { font-size: 9px; padding: 7px 4px; }
-}
+@media (max-width: 430px) { .chart-box { height: 270px; } .chart-legend { gap: 10px; font-size: 11px; } }
 </style>
 </head>
 <body>
@@ -135,179 +125,171 @@ footer { text-align: center; padding: 25px 10px; margin-top: 25px; font-size: 12
     <div class="grade-entry-card">
         <div class="grade-entry-kicker">ÖĞRENCİ GELİŞİM VE DENEME ANALİZİ</div>
         <h1>Hangi sınıf düzeyinde işlem yapmak istiyorsunuz?</h1>
-        <p>Bir sınıf düzeyi seçin. Seçiminizin ardından analiz programı yalnızca o sınıf düzeyinin verileriyle açılacaktır.</p>
+        <p>Bir sınıf düzeyi seçin. Seçiminizin ardından mevcut analiz programı yalnızca o sınıf düzeyinin verileriyle açılacaktır.</p>
         <div class="grade-entry-grid">
             <button class="grade-button" type="button" onclick="openGrade(5)">5. Sınıf</button>
             <button class="grade-button" type="button" onclick="openGrade(6)">6. Sınıf</button>
             <button class="grade-button" type="button" onclick="openGrade(7)">7. Sınıf</button>
             <button class="grade-button" type="button" onclick="openGrade(8)">8. Sınıf</button>
         </div>
-        <p id="gradeEntryStatus" class="grade-entry-status" aria-live="polite">Veriler hazırlanıyor...</p>
+        <p id="gradeEntryStatus" class="grade-entry-status">Veriler hazırlanıyor...</p>
         <p class="grade-entry-note">Sınıf sütunundaki değerler 5-A, 6/B, 7A veya 8. Sınıf gibi sınıf düzeyini belirten bir biçimde olmalıdır.</p>
     </div>
 </div>
-
 <div id="appShell" style="display:none">
-    <header>
-        <div class="header-controls">
-            <button class="btn-header btn-switch" type="button" onclick="returnToGradeSelection()">↩ Sınıf Değiştir</button>
-            <button id="refreshBtn" class="btn-header btn-refresh" type="button" onclick="verileriGetir()">🔄 Verileri Yenile</button>
-            <button class="btn-header btn-report" type="button" onclick="csvRaporAl()">📥 CSV Raporu İndir</button>
-        </div>
-        <h1>DENEME SINAVI ANALİZLERİ</h1>
-        <h2 id="gradeSubtitle">SINIF DÜZEYİ SEÇİLMEDİ</h2>
-    </header>
+<header>
+    <div class="header-controls">
+        <button class="btn-header btn-refresh" type="button" onclick="returnToGradeSelection()">↩ Sınıf Değiştir</button>
+    </div>
+    <h1>DENEME SINAVI ANALİZLERİ</h1>
+    <h2 id="gradeSubtitle">SINIF DÜZEYİ SEÇİLMEDİ</h2>
+</header>
+<div class="container">
+<div class="main-content">
+    <div class="main-tabs">
+        <button class="active" id="tabAnalizBtn" type="button" onclick="switchMainTab('analiz')">📈 Bireysel Analiz</button>
+        <button id="tabSinifBtn" type="button" onclick="switchMainTab('sinif')">🏫 Sınıf Analizi</button>
+        <button id="tabSiralamaBtn" type="button" onclick="switchMainTab('siralama')">🏆 Genel Sıralama</button>
+    </div>
+    <div id="loadingMsg" class="loading-overlay">⏳ Veriler yükleniyor, lütfen bekleyin...</div>
+    <div id="errorMsg" class="error-box"></div>
 
-    <div class="container">
-    <div class="main-content">
-        <div class="main-tabs">
-            <button class="active" id="tabAnalizBtn" type="button" onclick="switchMainTab('analiz')">📈 Bireysel Analiz</button>
-            <button id="tabSinifBtn" type="button" onclick="switchMainTab('sinif')">🏫 Sınıf Analizi</button>
-            <button id="tabSiralamaBtn" type="button" onclick="switchMainTab('siralama')">🏆 Genel Sıralama</button>
-        </div>
-
-        <div id="loadingMsg" class="loading-overlay" role="status">⏳ Veriler yükleniyor, lütfen bekleyin...</div>
-        <div id="errorMsg" class="error-box" role="alert"></div>
-
-        <div id="analizView" class="view-section active">
-            <div class="filter-section">
-                <div class="individual-filters">
-                    <div>
-                        <label for="individualClassFilter"><strong>🏫 Sınıf Seçin:</strong></label>
-                        <select id="individualClassFilter" aria-label="Bireysel analiz için sınıf seçin" onchange="bireyselSinifGuncelle()"></select>
-                    </div>
-                    <div>
-                        <label for="studentFilter"><strong>🔍 Öğrenci Seçin:</strong></label>
-                        <select id="studentFilter" aria-label="Öğrenci seçin" onchange="analizGuncelle()"></select>
-                    </div>
+    <div id="analizView" class="view-section active">
+        <div class="filter-section">
+            <div class="individual-filters">
+                <div>
+                    <label for="individualClassFilter"><strong>🏫 Sınıf Seçin:</strong></label>
+                    <select id="individualClassFilter" aria-label="Bireysel analiz için sınıf seçin" onchange="bireyselSinifGuncelle()"></select>
+                </div>
+                <div>
+                    <label for="studentFilter"><strong>🔍 Öğrenci Seçin:</strong></label>
+                    <select id="studentFilter" onchange="analizGuncelle()"></select>
                 </div>
             </div>
-            <div class="branch-tabs" id="branchTabs">
-                <button class="active" type="button" onclick="setBranch('total', this)">Toplam Net</button>
-                <button class="lgs-only" type="button" onclick="setBranch('lgs', this)">LGS Puanı</button>
-                <button type="button" onclick="setBranch('tur', this)">Türkçe</button>
-                <button type="button" onclick="setBranch('ink', this)">Sosyal/İnkılap</button>
-                <button type="button" onclick="setBranch('din', this)">Din</button>
-                <button type="button" onclick="setBranch('ing', this)">İngilizce</button>
-                <button type="button" onclick="setBranch('mat', this)">Matematik</button>
-                <button type="button" onclick="setBranch('fen', this)">Fen</button>
-            </div>
-            <div class="chart-box">
-                <svg id="devChart" viewBox="0 0 1000 400" preserveAspectRatio="none" role="img" aria-label="Öğrenci gelişim grafiği"></svg>
-            </div>
-            <div class="chart-legend">
-                <span class="legend-item"><span class="legend-line"></span> Öğrenci</span>
-                <span class="legend-item"><span class="legend-line school"></span> Sınıf Düzeyi Ortalaması</span>
-            </div>
-            <div class="stats-container" id="statsContainer"></div>
-            <div class="table-container">
-                <table id="resTable">
-                    <thead><tr>
-                        <th>Sınav</th><th>TÜR</th><th>SOS/İNK</th><th>DİN</th><th>İNG</th>
-                        <th>MAT</th><th>FEN</th><th>TOPLAM NET</th><th class="lgs-only">LGS PUANI</th>
-                    </tr></thead>
-                    <tbody></tbody>
-                </table>
+        </div>
+        <div class="branch-tabs" id="branchTabs">
+            <button class="active" type="button" onclick="setBranch('total', this)">Toplam Net</button>
+            <button class="lgs-only" type="button" onclick="setBranch('lgs', this)">LGS Puanı</button>
+            <button type="button" onclick="setBranch('tur', this)">Türkçe</button>
+            <button type="button" onclick="setBranch('ink', this)">Sosyal/İnkılap</button>
+            <button type="button" onclick="setBranch('din', this)">Din</button>
+            <button type="button" onclick="setBranch('ing', this)">İngilizce</button>
+            <button type="button" onclick="setBranch('mat', this)">Matematik</button>
+            <button type="button" onclick="setBranch('fen', this)">Fen</button>
+        </div>
+        <div class="chart-box">
+            <svg id="devChart" viewBox="0 0 1000 400" preserveAspectRatio="none" role="img" aria-label="Öğrenci gelişim grafiği"></svg>
+        </div>
+        <div class="chart-legend">
+            <span class="legend-item"><span class="legend-line"></span> Öğrenci</span>
+            <span class="legend-item"><span class="legend-line school"></span> Okul Ortalaması</span>
+        </div>
+        <div class="stats-container" id="statsContainer"></div>
+        <div class="table-container">
+            <table id="resTable">
+                <thead><tr>
+                    <th>Sınav</th><th>TÜR</th><th>SOS/İNK</th><th>DİN</th><th>İNG</th>
+                    <th>MAT</th><th>FEN</th><th>TOPLAM NET</th><th class="lgs-only">LGS Puanı</th>
+                </tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="siralamaView" class="view-section">
+        <div class="filter-section">
+            <div class="ranking-filters">
+                <select id="examFilter" aria-label="Sınav seçin" onchange="siralamaGuncelle()"></select>
+                <select id="classFilter" aria-label="Sınıf seçin" onchange="siralamaGuncelle()"></select>
+                <select id="sortFilter" aria-label="Sıralama ölçütü" onchange="siralamaGuncelle()">
+                    <option class="lgs-only" value="lgs">Sıralama: LGS Puanı</option>
+                    <option value="total">Sıralama: Toplam Net</option>
+                    <option value="tur">Sıralama: Türkçe</option>
+                    <option value="ink">Sıralama: Sosyal/İnkılap</option>
+                    <option value="din">Sıralama: Din</option>
+                    <option value="ing">Sıralama: İngilizce</option>
+                    <option value="mat">Sıralama: Matematik</option>
+                    <option value="fen">Sıralama: Fen</option>
+                </select>
             </div>
         </div>
+        <div class="stats-container" id="examAveragesContainer" style="display:none;margin-bottom:20px;"></div>
+        <div class="table-container">
+            <table id="rankTable">
+                <thead><tr>
+                    <th>Sıra</th><th>Öğrenci Adı Soyadı</th><th>Sınıf</th><th>TÜR</th><th>SOS/İNK</th><th>DİN</th>
+                    <th>İNG</th><th>MAT</th><th>FEN</th><th>TOPLAM NET</th><th class="lgs-only">LGS Puanı</th>
+                </tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
 
-        <div id="siralamaView" class="view-section">
-            <div class="filter-section">
-                <div class="ranking-filters">
-                    <select id="examFilter" aria-label="Sınav seçin" onchange="siralamaGuncelle()"></select>
-                    <select id="classFilter" aria-label="Sınıf seçin" onchange="siralamaGuncelle()"></select>
-                    <select id="sortFilter" aria-label="Sıralama ölçütü" onchange="siralamaGuncelle()">
-                        <option class="lgs-only" value="lgs">Sıralama: LGS Puanı</option>
-                        <option value="total">Sıralama: Toplam Net</option>
-                        <option value="tur">Sıralama: Türkçe</option>
-                        <option value="ink">Sıralama: Sosyal/İnkılap</option>
-                        <option value="din">Sıralama: Din</option>
-                        <option value="ing">Sıralama: İngilizce</option>
-                        <option value="mat">Sıralama: Matematik</option>
-                        <option value="fen">Sıralama: Fen</option>
+    <div id="sinifAnalizView" class="view-section">
+        <div class="filter-section">
+            <div class="class-analysis-filters">
+                <div>
+                    <label for="classAnalysisFilter"><strong>🏫 Sınıf Seçin:</strong></label>
+                    <select id="classAnalysisFilter" aria-label="Sınıf analizi için sınıf seçin" onchange="sinifAnaliziGuncelle()"></select>
+                </div>
+                <div>
+                    <label for="classMetricFilter"><strong>📊 Gelişim Grafiği:</strong></label>
+                    <select id="classMetricFilter" aria-label="Sınıf gelişim grafiği ölçütü" onchange="sinifAnaliziGuncelle()">
+                        <option value="total">Genel Net Ortalaması</option>
+                        <option class="lgs-only" value="lgs">LGS Puan Ortalaması</option>
+                        <option value="tur">Türkçe Ortalaması</option>
+                        <option value="ink">Sosyal/İnkılap Ortalaması</option>
+                        <option value="din">Din Kültürü Ortalaması</option>
+                        <option value="ing">İngilizce Ortalaması</option>
+                        <option value="mat">Matematik Ortalaması</option>
+                        <option value="fen">Fen Bilimleri Ortalaması</option>
                     </select>
                 </div>
             </div>
-            <div class="stats-container" id="examAveragesContainer" style="display:none;margin-bottom:20px;"></div>
-            <div class="table-container">
-                <table id="rankTable">
-                    <thead><tr>
-                        <th>Sıra</th><th>Öğrenci Adı Soyadı</th><th>Sınıf</th><th>TÜR</th><th>SOS/İNK</th><th>DİN</th>
-                        <th>İNG</th><th>MAT</th><th>FEN</th><th>TOPLAM NET</th><th class="lgs-only">LGS PUANI</th>
-                    </tr></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
         </div>
 
-        <div id="sinifAnalizView" class="view-section">
-            <div class="filter-section">
-                <div class="class-analysis-filters">
-                    <div>
-                        <label for="classAnalysisFilter"><strong>🏫 Sınıf Seçin:</strong></label>
-                        <select id="classAnalysisFilter" aria-label="Sınıf analizi için sınıf seçin" onchange="sinifAnaliziGuncelle()"></select>
-                    </div>
-                    <div>
-                        <label for="classMetricFilter"><strong>📊 Gelişim Grafiği:</strong></label>
-                        <select id="classMetricFilter" aria-label="Sınıf gelişim grafiği ölçütü" onchange="sinifAnaliziGuncelle()">
-                            <option value="total">Genel Net Ortalaması</option>
-                            <option class="lgs-only" value="lgs">LGS Puan Ortalaması</option>
-                            <option value="tur">Türkçe Ortalaması</option>
-                            <option value="ink">Sosyal/İnkılap Ortalaması</option>
-                            <option value="din">Din Kültürü Ortalaması</option>
-                            <option value="ing">İngilizce Ortalaması</option>
-                            <option value="mat">Matematik Ortalaması</option>
-                            <option value="fen">Fen Bilimleri Ortalaması</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+        <h3 class="analysis-subtitle">Sınavlara Göre Ortalama Değişimi</h3>
+        <div class="chart-box">
+            <svg id="classTrendChart" viewBox="0 0 1000 400" preserveAspectRatio="none" role="img" aria-label="Sınıf ortalamalarının sınavlara göre değişim grafiği"></svg>
+        </div>
+        <div class="chart-legend" id="classTrendLegend"></div>
+        <p class="class-analysis-note">Bir sınıf seçildiğinde kesikli çizgi, aynı sınavdaki okul ortalamasını gösterir. Tüm Sınıflar seçildiğinde yalnızca seçilen sınıf düzeyinin tüm şubeleri birlikte değerlendirilir.</p>
 
-            <h3 class="analysis-subtitle">Sınavlara Göre Ortalama Değişimi</h3>
-            <div class="chart-box">
-                <svg id="classTrendChart" viewBox="0 0 1000 400" preserveAspectRatio="none" role="img" aria-label="Sınıf ortalamalarının sınavlara göre değişim grafiği"></svg>
-            </div>
-            <div class="chart-legend" id="classTrendLegend"></div>
-            <p class="class-analysis-note">Tek bir şube seçildiğinde kesikli çizgi, aynı sınıf düzeyindeki tüm şubelerin ortalamasını gösterir. “Tüm Sınıflar” seçildiğinde seçilen sınıf düzeyindeki şubeler birlikte değerlendirilir. Sınav sırası data.csv dosyasındaki ilk görünme sırasına göre belirlenir.</p>
-
-            <h3 class="analysis-subtitle">Sınav Bazlı Sınıf Ortalamaları</h3>
-            <div class="table-container">
-                <table id="classTrendTable">
-                    <thead><tr>
-                        <th>Sınav</th><th>Katılan Öğrenci</th><th>TÜR Ort.</th><th>SOS/İNK Ort.</th><th>DİN Ort.</th>
-                        <th>İNG Ort.</th><th>MAT Ort.</th><th>FEN Ort.</th><th>GENEL NET Ort.</th><th class="lgs-only">LGS PUAN Ort.</th>
-                    </tr></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
+        <h3 class="analysis-subtitle">Sınav Bazlı Sınıf Ortalamaları</h3>
+        <div class="table-container">
+            <table id="classTrendTable">
+                <thead><tr>
+                    <th>Sınav</th><th>Katılan Öğrenci</th><th>TÜR Ort.</th><th>SOS/İNK Ort.</th><th>DİN Ort.</th>
+                    <th>İNG Ort.</th><th>MAT Ort.</th><th>FEN Ort.</th><th>GENEL NET Ort.</th><th class="lgs-only">LGS Puanı</th>
+                </tr></thead>
+                <tbody></tbody>
+            </table>
         </div>
     </div>
-    </div>
-    <footer>Öğrenci gelişim ve deneme analiz sistemi</footer>
 </div>
+</div>
+<footer>
+</footer>
 
+</div>
 <script>
 /*
-  Veri kaynağı: Aynı klasördeki data.csv dosyası.
-  Beklenen sütun sırası:
+  Veri kaynağı Google Sheets değildir; GitHub Actions'ın oluşturduğu data.csv dosyasıdır.
+  Yeni Google Sheets sütun sırası:
   A Öğrenci Adı Soyadı | B Sınıfı | C Sınav Adı | D Türkçe | E Sosyal/İnkılap
-  F Din | G İngilizce | H Matematik | I Fen | J LGS Puanı | K Öğrenci No (isteğe bağlı)
-
-  Eski 10 sütunlu CSV dosyaları da çalışmaya devam eder.
+  F Din | G İngilizce | H Matematik | I Fen | J LGS Puanı
 */
 const DATA_URL = 'data.csv';
 const ALL_CLASSES = '__ALL_CLASSES__';
-const VALUE_KEYS = ['tur', 'ink', 'din', 'ing', 'mat', 'fen', 'total', 'lgs'];
-
 let dataStore = [];
 let currentBranch = 'total';
 let activeGrade = null;
+let dataLoaded = false;
 let dataLoadError = '';
-let loadRequestNumber = 0;
 
+// Sınıf adı 5-A, 6/B, 7A, 8. Sınıf gibi başlıyorsa sınıf düzeyini belirler.
 function getGradeFromClassName(className) {
-    const value = String(className || '').trim().replace(/^\uFEFF/, '');
-    const match = value.match(/^([5-8])(?=\s|[-/.]|[A-Za-zÇĞİÖŞÜçğıöşü]|$)/u);
+    const match = String(className || '').trim().match(/^([5-8])(?=\s|[-/.]|[A-Za-zÇĞİÖŞÜçğıöşü]|$)/u);
     return match ? Number(match[1]) : null;
 }
 
@@ -316,50 +298,17 @@ function getActiveGradeData() {
     return dataStore.filter(record => getGradeFromClassName(record.className) === activeGrade);
 }
 
-// Öğrenci numarası varsa ad-soyad çakışmalarını önlemek için kimlikte kullanılır.
-// Numara yoksa eski CSV uyumluluğu için ad-soyad + sınıf kullanılır.
-function getStudentIdentityKey(record) {
-    const studentNo = String(record.studentNo || '').trim();
-    return studentNo
-        ? JSON.stringify(['NO', record.className, studentNo])
-        : JSON.stringify(['NAME', record.className, record.name]);
-}
-
-// Sınav sırası, seçilen sınıf düzeyindeki CSV kayıtlarında ilk görünme sırasıdır.
-function getExamOrderMap(records) {
-    const order = new Map();
-    records.forEach(record => {
-        if (!order.has(record.exam)) order.set(record.exam, order.size);
-    });
-    return order;
-}
-
-function sortRecordsByExamOrder(records, orderMap) {
-    const order = orderMap || getExamOrderMap(getActiveGradeData());
-    return records.map((record, index) => ({ record, index }))
-        .sort((a, b) => {
-            const aOrder = order.has(a.record.exam) ? order.get(a.record.exam) : Number.MAX_SAFE_INTEGER;
-            const bOrder = order.has(b.record.exam) ? order.get(b.record.exam) : Number.MAX_SAFE_INTEGER;
-            return aOrder - bOrder || a.index - b.index;
-        })
-        .map(item => item.record);
-}
-
 function openGrade(grade) {
     activeGrade = Number(grade);
     document.getElementById('gradeEntry').style.display = 'none';
     document.getElementById('appShell').style.display = 'block';
     document.getElementById('gradeSubtitle').textContent = activeGrade + '. SINIFLAR';
     applyGradeMode();
-
-    if (dataStore.length) {
-        renderActiveGrade();
-    } else if (dataLoadError) {
+    if (dataStore.length) renderActiveGrade();
+    else if (dataLoadError) {
         document.getElementById('loadingMsg').style.display = 'none';
         showError('Veriler yüklenemedi: ' + dataLoadError);
-    } else {
-        document.getElementById('loadingMsg').style.display = 'block';
-    }
+    } else document.getElementById('loadingMsg').style.display = 'block';
 }
 
 function returnToGradeSelection() {
@@ -370,24 +319,16 @@ function returnToGradeSelection() {
 
 function applyGradeMode() {
     const isGrade8 = activeGrade === 8;
-    const appShell = document.getElementById('appShell');
-    appShell.classList.toggle('grade-8', isGrade8);
-
-    // Mevcut başlık, düğme ve seçenekleri güncelle.
-    document.querySelectorAll('#appShell .lgs-only').forEach(element => {
-        element.hidden = !isGrade8;
+    document.querySelectorAll('.lgs-only').forEach(element => {
+        element.style.display = isGrade8 ? '' : 'none';
         if (element.tagName === 'OPTION') element.disabled = !isGrade8;
     });
-
+    const sortFilter = document.getElementById('sortFilter');
+    const metricFilter = document.getElementById('classMetricFilter');
     if (!isGrade8) {
-        if (document.getElementById('sortFilter').value === 'lgs') {
-            document.getElementById('sortFilter').value = 'total';
-        }
-        if (document.getElementById('classMetricFilter').value === 'lgs') {
-            document.getElementById('classMetricFilter').value = 'total';
-        }
+        if (sortFilter.value === 'lgs') sortFilter.value = 'total';
+        if (metricFilter.value === 'lgs') metricFilter.value = 'total';
         if (currentBranch === 'lgs') currentBranch = 'total';
-
         document.querySelectorAll('#branchTabs button').forEach(button => button.classList.remove('active'));
         const totalButton = document.querySelector('#branchTabs button[onclick*="total"]');
         if (totalButton) totalButton.classList.add('active');
@@ -401,7 +342,6 @@ function renderActiveGrade() {
     analizGuncelle();
     siralamaGuncelle();
     sinifAnaliziGuncelle();
-
     const gradeRecords = getActiveGradeData();
     if (!gradeRecords.length && dataStore.length) {
         showError(activeGrade + '. sınıfa ait kayıt bulunamadı. CSV dosyasındaki “Sınıfı” sütununda 5-A, 6/B, 7A veya 8-A gibi sınıf bilgileri bulunduğunu kontrol edin.');
@@ -410,82 +350,71 @@ function renderActiveGrade() {
     }
 }
 
+
 const branchNames = {
-    total: 'Toplam Net', lgs: 'LGS Puanı', tur: 'Türkçe', ink: 'Sosyal/İnkılap',
-    din: 'Din', ing: 'İngilizce', mat: 'Matematik', fen: 'Fen'
+    total:'Toplam Net', lgs:'LGS Puanı', tur:'Türkçe', ink:'Sosyal/İnkılap',
+    din:'Din', ing:'İngilizce', mat:'Matematik', fen:'Fen'
 };
 
 function escapeHtml(value) {
     return String(value == null ? '' : value)
-        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 
 function parseNum(value) {
     if (value == null || String(value).trim() === '') return 0;
-    let s = String(value).trim().replace(/\s/g, '');
+    let s = String(value).trim().replace(/\s/g,'');
     const comma = s.lastIndexOf(',');
     const dot = s.lastIndexOf('.');
     if (comma > -1 && dot > -1) {
-        s = comma > dot ? s.replace(/\./g, '').replace(',', '.') : s.replace(/,/g, '');
+        s = comma > dot ? s.replace(/\./g,'').replace(',','.') : s.replace(/,/g,'');
     } else if (comma > -1) {
-        s = s.replace(',', '.');
+        s = s.replace(',','.');
     }
-    const number = Number(s);
-    return Number.isFinite(number) ? number : 0;
+    const n = Number(s);
+    return Number.isFinite(n) ? n : 0;
 }
 
 /* Virgül veya noktalı virgül ayraçlı CSV; tırnaklı hücreleri destekler. */
 function parseCSV(text) {
     text = String(text || '').replace(/^\uFEFF/, '');
     let separator = ',';
-    let inQuotes = false;
-    let commas = 0;
-    let semicolons = 0;
-
+    let inQuotes = false, commas = 0, semicolons = 0;
     for (let i = 0; i < text.length; i++) {
-        const character = text[i];
-        if (character === '"') {
+        const ch = text[i];
+        if (ch === '"') {
             if (inQuotes && text[i + 1] === '"') i++;
             else inQuotes = !inQuotes;
         } else if (!inQuotes) {
-            if (character === ',') commas++;
-            if (character === ';') semicolons++;
-            if (character === '\n' || character === '\r') break;
+            if (ch === ',') commas++;
+            if (ch === ';') semicolons++;
+            if (ch === '\n' || ch === '\r') break;
         }
     }
     separator = semicolons > commas ? ';' : ',';
 
     const rows = [];
-    let row = [];
-    let field = '';
+    let row = [], field = '';
     inQuotes = false;
-
     for (let i = 0; i < text.length; i++) {
-        const character = text[i];
-        if (character === '"') {
-            if (inQuotes && text[i + 1] === '"') {
-                field += '"';
-                i++;
-            } else {
-                inQuotes = !inQuotes;
-            }
-        } else if (character === separator && !inQuotes) {
-            row.push(field.trim());
-            field = '';
-        } else if ((character === '\n' || character === '\r') && !inQuotes) {
-            if (character === '\r' && text[i + 1] === '\n') i++;
-            row.push(field.trim());
-            field = '';
-            if (row.some(value => String(value).trim() !== '')) rows.push(row);
+        const ch = text[i];
+        if (ch === '"') {
+            if (inQuotes && text[i + 1] === '"') { field += '"'; i++; }
+            else inQuotes = !inQuotes;
+        } else if (ch === separator && !inQuotes) {
+            row.push(field.trim()); field = '';
+        } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
+            if (ch === '\r' && text[i + 1] === '\n') i++;
+            row.push(field.trim()); field = '';
+            if (row.some(v => String(v).trim() !== '')) rows.push(row);
             row = [];
         } else {
-            field += character;
+            field += ch;
         }
     }
-
     row.push(field.trim());
-    if (row.some(value => String(value).trim() !== '')) rows.push(row);
+    if (row.some(v => String(v).trim() !== '')) rows.push(row);
     return rows;
 }
 
@@ -494,123 +423,90 @@ function showError(message) {
     box.textContent = message;
     box.style.display = 'block';
 }
-
 function hideError() {
     const box = document.getElementById('errorMsg');
     box.textContent = '';
     box.style.display = 'none';
 }
 
-function setLoading(isLoading) {
-    document.getElementById('loadingMsg').style.display = isLoading ? 'block' : 'none';
-    document.getElementById('refreshBtn').disabled = isLoading;
-}
-
 async function verileriGetir() {
-    const thisRequest = ++loadRequestNumber;
-    setLoading(true);
+    const loading = document.getElementById('loadingMsg');
+    loading.style.display = 'block';
     hideError();
-
     try {
         const response = await fetch(DATA_URL + '?v=' + Date.now(), {
-            method: 'GET',
-            cache: 'no-store',
-            credentials: 'same-origin'
+            method: 'GET', cache: 'no-store', credentials: 'same-origin'
         });
         if (!response.ok) throw new Error('data.csv alınamadı (HTTP ' + response.status + ').');
-
         const raw = await response.text();
         if (!raw.trim()) throw new Error('data.csv boş.');
         if (/^\s*<(?:!DOCTYPE|html)/i.test(raw)) throw new Error('data.csv yerine HTML sayfası geldi.');
 
         const rows = parseCSV(raw);
         if (rows.length < 2) throw new Error('Henüz öğrenci verisi yayınlanmamış.');
-        if (rows[0].length < 10) throw new Error('CSV dosyasında en az 10 sütun bulunmalı. Beklenen sütun sırasını kontrol edin.');
 
         const parsed = [];
         for (let i = 1; i < rows.length; i++) {
-            const columns = rows[i];
-            if (columns.length < 10) continue;
+            const c = rows[i];
+            if (c.length < 10) continue;
+            const name = String(c[0] || '').trim();
+            const className = String(c[1] || '').trim() || 'Sınıfı Belirtilmemiş';
+            const exam = String(c[2] || '').trim();
+            if (!name || !exam) continue;
 
-            const name = String(columns[0] || '').trim();
-            const className = String(columns[1] || '').trim();
-            const exam = String(columns[2] || '').trim();
-            if (!name || !className || !exam) continue;
-
-            const tur = parseNum(columns[3]);
-            const ink = parseNum(columns[4]);
-            const din = parseNum(columns[5]);
-            const ing = parseNum(columns[6]);
-            const mat = parseNum(columns[7]);
-            const fen = parseNum(columns[8]);
-            const lgs = parseNum(columns[9]);
-            const studentNo = String(columns[10] || '').trim();
-
+            const tur = parseNum(c[3]);
+            const ink = parseNum(c[4]);
+            const din = parseNum(c[5]);
+            const ing = parseNum(c[6]);
+            const mat = parseNum(c[7]);
+            const fen = parseNum(c[8]);
+            const lgs = parseNum(c[9]);
             parsed.push({
-                name, className, exam, studentNo,
-                tur, ink, din, ing, mat, fen, lgs,
+                name, className, exam, tur, ink, din, ing, mat, fen, lgs,
                 total: tur + ink + din + ing + mat + fen
             });
         }
-        if (!parsed.length) throw new Error('Kullanılabilir öğrenci kaydı bulunamadı. CSV sütun sırasını kontrol edin.');
-
-        // Daha eski bir isteğin geç gelen yanıtı yeni verinin üzerine yazmasın.
-        if (thisRequest !== loadRequestNumber) return;
+        if (!parsed.length) throw new Error('Kullanılabilir öğrenci kaydı bulunamadı. Sütun sırasını kontrol edin.');
 
         dataStore = parsed;
+        dataLoaded = true;
         dataLoadError = '';
         const gradeStatus = document.getElementById('gradeEntryStatus');
         const gradeCounts = [5, 6, 7, 8].map(grade => {
-            const students = new Set(
-                parsed.filter(record => getGradeFromClassName(record.className) === grade)
-                    .map(record => getStudentIdentityKey(record))
-            );
-            return grade + '. sınıf: ' + students.size + ' öğrenci';
+            const gradeStudents = new Set(parsed.filter(d => getGradeFromClassName(d.className) === grade).map(d => JSON.stringify([d.name, d.className])));
+            return `${grade}. sınıf: ${gradeStudents.size} öğrenci`;
         }).join('  •  ');
         gradeStatus.textContent = 'Veriler yüklendi. ' + gradeCounts;
-
         if (activeGrade !== null) renderActiveGrade();
-    } catch (error) {
-        if (thisRequest !== loadRequestNumber) return;
-        console.error(error);
-        dataLoadError = error && error.message ? error.message : 'Bilinmeyen bir hata oluştu.';
-        document.getElementById('gradeEntryStatus').textContent = 'Veriler yüklenemedi: ' + dataLoadError;
-
-        // Yenileme başarısız olursa daha önce yüklenmiş geçerli veriyi silme.
-        if (dataStore.length) {
-            showError('Yeni veriler alınamadı. Önceden yüklenen veriler kullanılmaya devam ediyor. Ayrıntı: ' + dataLoadError);
-        } else {
-            document.getElementById('studentFilter').innerHTML = '<option value="">-- Veri alınamadı --</option>';
-            document.getElementById('examFilter').innerHTML = '<option value="">-- Veri alınamadı --</option>';
-            document.getElementById('classFilter').innerHTML = '<option value="">-- Veri alınamadı --</option>';
-            document.getElementById('classAnalysisFilter').innerHTML = '<option value="">-- Veri alınamadı --</option>';
-            document.querySelector('#resTable tbody').innerHTML = '<tr><td colspan="9">Veriler yüklenemedi.</td></tr>';
-            document.querySelector('#rankTable tbody').innerHTML = '<tr><td colspan="11">Veriler yüklenemedi.</td></tr>';
-            document.querySelector('#classTrendTable tbody').innerHTML = '<tr><td colspan="10">Veriler yüklenemedi.</td></tr>';
-            document.getElementById('statsContainer').innerHTML = '';
-            document.getElementById('examAveragesContainer').style.display = 'none';
-            drawEmptyChart('Veri yüklenemedi');
-            drawEmptySvg('classTrendChart', 'Veri yüklenemedi');
-            showError('Veri yüklenemedi: ' + dataLoadError);
-        }
+    } catch (e) {
+        console.error(e);
+        dataStore = [];
+        dataLoaded = true;
+        dataLoadError = e.message;
+        document.getElementById('gradeEntryStatus').textContent = 'Veriler yüklenemedi: ' + e.message;
+        document.getElementById('studentFilter').innerHTML = '<option value="">-- Veri alınamadı --</option>';
+        document.getElementById('examFilter').innerHTML = '<option value="">-- Veri alınamadı --</option>';
+        document.getElementById('classFilter').innerHTML = '<option value="">-- Veri alınamadı --</option>';
+        document.getElementById('classAnalysisFilter').innerHTML = '<option value="">-- Veri alınamadı --</option>';
+        document.querySelector('#resTable tbody').innerHTML = '<tr><td colspan="9">Veriler yüklenemedi.</td></tr>';
+        document.querySelector('#rankTable tbody').innerHTML = '<tr><td colspan="11">Veriler yüklenemedi.</td></tr>';
+        document.querySelector('#classTrendTable tbody').innerHTML = '<tr><td colspan="10">Veriler yüklenemedi.</td></tr>';
+        document.getElementById('statsContainer').innerHTML = '';
+        document.getElementById('examAveragesContainer').style.display = 'none';
+        drawEmptyChart('Veri yüklenemedi');
+        drawEmptySvg('classTrendChart', 'Veri yüklenemedi');
+        showError('Veri yüklenemedi: ' + e.message);
     } finally {
-        if (thisRequest === loadRequestNumber) setLoading(false);
+        loading.style.display = 'none';
     }
 }
 
 function addOption(select, text, value, bold = false) {
-    const option = document.createElement('option');
-    option.textContent = text;
-    option.value = value;
-    if (bold) option.style.fontWeight = 'bold';
-    select.appendChild(option);
-}
-
-function getStudentDisplayName(student, duplicateName) {
-    let label = student.name;
-    if (duplicateName) label += ' (' + student.className + ')';
-    if (student.studentNo) label += ' · No: ' + student.studentNo;
-    return label;
+    const opt = document.createElement('option');
+    opt.textContent = text;
+    opt.value = value;
+    if (bold) opt.style.fontWeight = 'bold';
+    select.appendChild(opt);
 }
 
 function updateIndividualStudentOptions() {
@@ -627,32 +523,25 @@ function updateIndividualStudentOptions() {
         ? []
         : selectedClass === ALL_CLASSES
             ? gradeRecords
-            : gradeRecords.filter(record => record.className === selectedClass);
+            : gradeRecords.filter(d => d.className === selectedClass);
 
+    // Aynı isimli öğrencileri sınıf bilgisiyle ayrı kayıtlar olarak tut.
     const uniqueStudents = new Map();
-    availableRecords.forEach(record => {
-        const key = getStudentIdentityKey(record);
-        if (!uniqueStudents.has(key)) {
-            uniqueStudents.set(key, {
-                name: record.name,
-                className: record.className,
-                studentNo: record.studentNo || ''
-            });
-        }
+    availableRecords.forEach(d => {
+        const key = JSON.stringify([d.name, d.className]);
+        if (!uniqueStudents.has(key)) uniqueStudents.set(key, { name: d.name, className: d.className });
     });
 
     const students = [...uniqueStudents.values()];
     const nameCounts = new Map();
     students.forEach(student => nameCounts.set(student.name, (nameCounts.get(student.name) || 0) + 1));
-    students.sort((a, b) =>
-        a.name.localeCompare(b.name, 'tr') ||
-        a.className.localeCompare(b.className, 'tr') ||
-        String(a.studentNo).localeCompare(String(b.studentNo), 'tr', { numeric: true })
-    );
+    students.sort((a, b) => a.name.localeCompare(b.name, 'tr') || a.className.localeCompare(b.className, 'tr'));
 
     students.forEach(student => {
-        const label = getStudentDisplayName(student, nameCounts.get(student.name) > 1);
-        addOption(studentSelect, label, JSON.stringify([student.name, student.className, student.studentNo]));
+        const label = nameCounts.get(student.name) > 1
+            ? `${student.name} (${student.className})`
+            : student.name;
+        addOption(studentSelect, label, JSON.stringify([student.name, student.className]));
     });
 
     if ([...studentSelect.options].some(option => option.value === previousStudent)) {
@@ -667,17 +556,15 @@ function bireyselSinifGuncelle() {
 
 function dropdownlariGuncelle() {
     const gradeRecords = getActiveGradeData();
-
     const individualClassSelect = document.getElementById('individualClassFilter');
     const previousIndividualClass = individualClassSelect.value;
     individualClassSelect.innerHTML = '';
     addOption(individualClassSelect, '-- Sınıf Seçin --', '');
     addOption(individualClassSelect, 'Tüm Sınıflar', ALL_CLASSES, true);
-    [...new Set(gradeRecords.map(record => record.className))]
-        .sort((a, b) => a.localeCompare(b, 'tr'))
+    [...new Set(gradeRecords.map(d => d.className))].sort((a, b) => a.localeCompare(b, 'tr'))
         .forEach(className => addOption(individualClassSelect, className, className));
-    const individualClasses = [...individualClassSelect.options].map(option => option.value);
-    individualClassSelect.value = individualClasses.includes(previousIndividualClass) && previousIndividualClass !== ''
+    const availableIndividualClasses = [...individualClassSelect.options].map(option => option.value);
+    individualClassSelect.value = availableIndividualClasses.includes(previousIndividualClass) && previousIndividualClass !== ''
         ? previousIndividualClass : ALL_CLASSES;
     updateIndividualStudentOptions();
 
@@ -686,10 +573,9 @@ function dropdownlariGuncelle() {
     classAnalysisSelect.innerHTML = '';
     addOption(classAnalysisSelect, '-- Sınıf Seçin --', '');
     addOption(classAnalysisSelect, 'Tüm Sınıflar', ALL_CLASSES, true);
-    [...new Set(gradeRecords.map(record => record.className))]
-        .sort((a, b) => a.localeCompare(b, 'tr'))
+    [...new Set(gradeRecords.map(d => d.className))].sort((a, b) => a.localeCompare(b, 'tr'))
         .forEach(className => addOption(classAnalysisSelect, className, className));
-    const analysisClasses = [...classAnalysisSelect.options].map(option => option.value);
+    const analysisClasses = [...classAnalysisSelect.options].map(o => o.value);
     classAnalysisSelect.value = analysisClasses.includes(previousAnalysisClass) && previousAnalysisClass !== ''
         ? previousAnalysisClass : ALL_CLASSES;
 
@@ -698,24 +584,19 @@ function dropdownlariGuncelle() {
     examSelect.innerHTML = '';
     addOption(examSelect, '-- Sınav Seçin --', '');
     addOption(examSelect, '🏆 Tüm Sınavların Genel Ortalaması', 'GENEL_ORTALAMA', true);
-    getExamOrderMap(gradeRecords).forEach((unused, exam) => addOption(examSelect, exam, exam));
-    if ([...examSelect.options].some(option => option.value === previousExam)) examSelect.value = previousExam;
+    [...new Set(gradeRecords.map(d => d.exam))].forEach(exam => addOption(examSelect, exam, exam));
+    if ([...examSelect.options].some(o => o.value === previousExam)) examSelect.value = previousExam;
 
     const classSelect = document.getElementById('classFilter');
     const previousClass = classSelect.value;
     classSelect.innerHTML = '';
     addOption(classSelect, '-- Sınıf Seçin --', '');
     addOption(classSelect, 'Tüm Sınıflar', ALL_CLASSES, true);
-    [...new Set(gradeRecords.map(record => record.className))]
-        .sort((a, b) => a.localeCompare(b, 'tr'))
+    [...new Set(gradeRecords.map(d => d.className))].sort((a, b) => a.localeCompare(b, 'tr'))
         .forEach(className => addOption(classSelect, className, className));
-    const availableClasses = [...classSelect.options].map(option => option.value);
+    const availableClasses = [...classSelect.options].map(o => o.value);
     classSelect.value = availableClasses.includes(previousClass) && previousClass !== ''
         ? previousClass : ALL_CLASSES;
-}
-
-function formatValue(value) {
-    return Number(value || 0).toFixed(2);
 }
 
 function siralamaGuncelle() {
@@ -723,64 +604,53 @@ function siralamaGuncelle() {
     const selectedClass = document.getElementById('classFilter').value || ALL_CLASSES;
     const sortKey = document.getElementById('sortFilter').value;
     const tbody = document.querySelector('#rankTable tbody');
-    const averageContainer = document.getElementById('examAveragesContainer');
+    const avgContainer = document.getElementById('examAveragesContainer');
 
     if (!exam) {
         tbody.innerHTML = '<tr><td colspan="11">Lütfen bir sınav belirleyin.</td></tr>';
-        averageContainer.style.display = 'none';
-        averageContainer.innerHTML = '';
+        avgContainer.style.display = 'none';
+        avgContainer.innerHTML = '';
         return;
     }
 
     const gradeRecords = getActiveGradeData();
     const classData = selectedClass === ALL_CLASSES
         ? gradeRecords.slice()
-        : gradeRecords.filter(record => record.className === selectedClass);
+        : gradeRecords.filter(d => d.className === selectedClass);
 
     let displayData = [];
     if (exam === 'GENEL_ORTALAMA') {
         const groups = new Map();
-        classData.forEach(record => {
-            const key = getStudentIdentityKey(record);
+        classData.forEach(d => {
+            const key = JSON.stringify([d.name, d.className]);
             if (!groups.has(key)) {
-                groups.set(key, {
-                    name: record.name, className: record.className, studentNo: record.studentNo || '',
-                    tur: 0, ink: 0, din: 0, ing: 0, mat: 0, fen: 0, lgs: 0, total: 0, count: 0
-                });
+                groups.set(key, { name: d.name, className: d.className, tur: 0, ink: 0, din: 0, ing: 0, mat: 0, fen: 0, lgs: 0, total: 0, count: 0 });
             }
-            const group = groups.get(key);
-            VALUE_KEYS.forEach(keyName => { group[keyName] += record[keyName]; });
-            group.count++;
+            const g = groups.get(key);
+            ['tur', 'ink', 'din', 'ing', 'mat', 'fen', 'lgs', 'total'].forEach(k => g[k] += d[k]);
+            g.count++;
         });
-
-        displayData = [...groups.values()].map(group => {
-            const result = {
-                name: group.name,
-                className: group.className,
-                studentNo: group.studentNo
-            };
-            VALUE_KEYS.forEach(key => { result[key] = group.count ? group[key] / group.count : 0; });
-            return result;
-        });
+        displayData = [...groups.values()].map(g => ({
+            name: g.name, className: g.className,
+            tur: g.tur / g.count, ink: g.ink / g.count, din: g.din / g.count,
+            ing: g.ing / g.count, mat: g.mat / g.count, fen: g.fen / g.count,
+            lgs: g.lgs / g.count, total: g.total / g.count
+        }));
     } else {
-        displayData = classData.filter(record => record.exam === exam).slice();
+        displayData = classData.filter(d => d.exam === exam).slice();
     }
 
-    displayData.sort((a, b) =>
-        (Number(b[sortKey]) || 0) - (Number(a[sortKey]) || 0) ||
-        a.name.localeCompare(b.name, 'tr') ||
-        a.className.localeCompare(b.className, 'tr')
-    );
+    displayData.sort((a, b) => (b[sortKey] || 0) - (a[sortKey] || 0));
 
     if (!displayData.length) {
-        averageContainer.style.display = 'none';
-        averageContainer.innerHTML = '';
+        avgContainer.style.display = 'none';
+        avgContainer.innerHTML = '';
         tbody.innerHTML = '<tr><td colspan="11">Seçilen sınav ve sınıfa ait kayıt bulunamadı.</td></tr>';
         return;
     }
 
-    const average = key => formatValue(displayData.reduce((sum, record) => sum + Number(record[key] || 0), 0) / displayData.length);
-    averageContainer.innerHTML = `
+    const average = key => (displayData.reduce((sum, d) => sum + d[key], 0) / displayData.length).toFixed(2);
+    avgContainer.innerHTML = `
         <div class="stat-card"><h4>TÜR Ort.</h4><div class="stat-value">${average('tur')}</div></div>
         <div class="stat-card"><h4>SOS/İNK Ort.</h4><div class="stat-value">${average('ink')}</div></div>
         <div class="stat-card"><h4>DİN Ort.</h4><div class="stat-value">${average('din')}</div></div>
@@ -788,29 +658,34 @@ function siralamaGuncelle() {
         <div class="stat-card"><h4>MAT Ort.</h4><div class="stat-value">${average('mat')}</div></div>
         <div class="stat-card"><h4>FEN Ort.</h4><div class="stat-value">${average('fen')}</div></div>
         <div class="stat-card highlight"><h4>Top. Net</h4><div class="stat-value" style="color:#2980b9">${average('total')}</div></div>
-        ${activeGrade === 8 ? `<div class="stat-card highlight"><h4>LGS Puan Ort.</h4><div class="stat-value" style="color:#e67e22">${average('lgs')}</div></div>` : ''}`;
-    averageContainer.style.display = 'flex';
+        ${activeGrade === 8 ? `<div class="stat-card highlight"><h4>LGS Puan</h4><div class="stat-value" style="color:#e67e22">${average('lgs')}</div></div>` : ''}`;
+    avgContainer.style.display = 'flex';
 
     const highlight = key => sortKey === key ? 'font-weight:bold;background:#fff9db' : '';
-    tbody.innerHTML = displayData.map((record, index) => {
-        const displayName = record.studentNo
-            ? escapeHtml(record.name) + ' <small>(No: ' + escapeHtml(record.studentNo) + ')</small>'
-            : escapeHtml(record.name);
-        return `<tr>
-            <td>${index + 1}</td>
-            <td style="text-align:left;font-weight:500">${displayName}</td>
-            <td>${escapeHtml(record.className)}</td>
-            <td style="${highlight('tur')}">${formatValue(record.tur)}</td>
-            <td style="${highlight('ink')}">${formatValue(record.ink)}</td>
-            <td style="${highlight('din')}">${formatValue(record.din)}</td>
-            <td style="${highlight('ing')}">${formatValue(record.ing)}</td>
-            <td style="${highlight('mat')}">${formatValue(record.mat)}</td>
-            <td style="${highlight('fen')}">${formatValue(record.fen)}</td>
-            <td style="color:#2980b9;${highlight('total')}">${formatValue(record.total)}</td>
-            <td class="lgs-only" style="color:#e67e22;${highlight('lgs')}">${formatValue(record.lgs)}</td>
-        </tr>`;
-    }).join('');
+    tbody.innerHTML = displayData.map((d, i) => `
+        <tr>
+            <td>${i + 1}</td>
+            <td style="text-align:left;font-weight:500">${escapeHtml(d.name)}</td>
+            <td>${escapeHtml(d.className)}</td>
+            <td style="${highlight('tur')}">${d.tur.toFixed(2)}</td>
+            <td style="${highlight('ink')}">${d.ink.toFixed(2)}</td>
+            <td style="${highlight('din')}">${d.din.toFixed(2)}</td>
+            <td style="${highlight('ing')}">${d.ing.toFixed(2)}</td>
+            <td style="${highlight('mat')}">${d.mat.toFixed(2)}</td>
+            <td style="${highlight('fen')}">${d.fen.toFixed(2)}</td>
+            <td style="color:#2980b9;${highlight('total')}">${d.total.toFixed(2)}</td>
+            <td class="lgs-only" style="color:#e67e22;${highlight('lgs')}">${d.lgs.toFixed(2)}</td>
+        </tr>`).join('');
 }
+
+const CLASS_METRICS = [
+    { key: 'tur', label: 'Türkçe', color: '#3498db' },
+    { key: 'ink', label: 'Sosyal/İnkılap', color: '#16a085' },
+    { key: 'din', label: 'Din', color: '#9b59b6' },
+    { key: 'ing', label: 'İngilizce', color: '#f39c12' },
+    { key: 'mat', label: 'Matematik', color: '#e74c3c' },
+    { key: 'fen', label: 'Fen', color: '#2ecc71' }
+];
 
 function ortalama(records, key) {
     if (!records.length) return 0;
@@ -818,13 +693,13 @@ function ortalama(records, key) {
 }
 
 function sinifAnaliziGuncelle() {
-    const selectedClass = document.getElementById('classAnalysisFilter').value;
+    const classSelect = document.getElementById('classAnalysisFilter');
+    const selectedClass = classSelect.value;
     const tbody = document.querySelector('#classTrendTable tbody');
     const legend = document.getElementById('classTrendLegend');
-    const emptyColspan = activeGrade === 8 ? 10 : 9;
 
     if (!dataStore.length || !selectedClass) {
-        tbody.innerHTML = `<tr><td colspan="${emptyColspan}">Lütfen bir sınıf seçin.</td></tr>`;
+        tbody.innerHTML = '<tr><td colspan="10">Lütfen bir sınıf seçin.</td></tr>';
         drawEmptySvg('classTrendChart', selectedClass ? 'Veri bulunamadı' : 'Sınıf seçin');
         legend.innerHTML = '';
         return;
@@ -833,67 +708,69 @@ function sinifAnaliziGuncelle() {
     const gradeRecords = getActiveGradeData();
     const selectedRecords = selectedClass === ALL_CLASSES
         ? gradeRecords.slice()
-        : gradeRecords.filter(record => record.className === selectedClass);
+        : gradeRecords.filter(d => d.className === selectedClass);
 
     if (!selectedRecords.length) {
-        tbody.innerHTML = `<tr><td colspan="${emptyColspan}">Seçilen sınıfa ait kayıt bulunamadı.</td></tr>`;
+        tbody.innerHTML = '<tr><td colspan="10">Seçilen sınıfa ait kayıt bulunamadı.</td></tr>';
         drawEmptySvg('classTrendChart', 'Kayıt bulunamadı');
         legend.innerHTML = '';
         return;
     }
 
-    const examOrder = [...getExamOrderMap(gradeRecords).keys()];
+    // Sınav sırası, CSV dosyasındaki ilk görünme sırasına göre korunur.
+    const examOrder = [...new Set(gradeRecords.map(d => d.exam))];
     const summaries = examOrder.map(exam => {
-        const records = selectedRecords.filter(record => record.exam === exam);
+        const records = selectedRecords.filter(d => d.exam === exam);
         if (!records.length) return null;
-
         const summary = { exam, count: records.length };
-        VALUE_KEYS.forEach(key => { summary[key] = ortalama(records, key); });
-
-        const gradeExamRecords = gradeRecords.filter(record => record.exam === exam);
-        summary.gradeAverage = {};
-        VALUE_KEYS.forEach(key => { summary.gradeAverage[key] = ortalama(gradeExamRecords, key); });
+        ['tur', 'ink', 'din', 'ing', 'mat', 'fen', 'total', 'lgs'].forEach(key => {
+            summary[key] = ortalama(records, key);
+        });
+        const schoolRecords = gradeRecords.filter(d => d.exam === exam);
+        summary.school = {};
+        ['tur', 'ink', 'din', 'ing', 'mat', 'fen', 'total', 'lgs'].forEach(key => {
+            summary.school[key] = ortalama(schoolRecords, key);
+        });
         return summary;
     }).filter(Boolean);
 
     if (!summaries.length) {
-        tbody.innerHTML = `<tr><td colspan="${emptyColspan}">Seçilen sınıf için sınav ortalaması hesaplanamadı.</td></tr>`;
+        tbody.innerHTML = '<tr><td colspan="10">Seçilen sınıf için sınav ortalaması hesaplanamadı.</td></tr>';
         drawEmptySvg('classTrendChart', 'Grafik verisi bulunamadı');
         legend.innerHTML = '';
         return;
     }
 
-    let metricKey = document.getElementById('classMetricFilter').value || 'total';
-    if (metricKey === 'lgs' && activeGrade !== 8) metricKey = 'total';
+    const metricKey = document.getElementById('classMetricFilter').value || 'total';
     const metricTitle = branchNames[metricKey] || 'Genel Net';
     const classValues = summaries.map(item => item[metricKey]);
-    const gradeValues = summaries.map(item => item.gradeAverage[metricKey]);
-    const showGradeComparison = selectedClass !== ALL_CLASSES;
+    const schoolValues = summaries.map(item => item.school[metricKey]);
+    const showSchoolComparison = selectedClass !== ALL_CLASSES;
 
     drawClassTrendChart(
         summaries.map(item => item.exam),
         classValues,
-        gradeValues,
+        schoolValues,
         metricTitle,
-        showGradeComparison
+        showSchoolComparison
     );
 
-    legend.innerHTML = showGradeComparison
-        ? '<span class="legend-item"><span class="legend-line"></span> Seçilen Şube</span><span class="legend-item"><span class="legend-line school"></span> Sınıf Düzeyi Ortalaması</span>'
-        : '<span class="legend-item"><span class="legend-line"></span> Seçilen Sınıf Düzeyinin Tüm Şubeleri</span>';
+    legend.innerHTML = showSchoolComparison
+        ? '<span class="legend-item"><span class="legend-line"></span> Seçilen Sınıf</span><span class="legend-item"><span class="legend-line school"></span> Okul Ortalaması</span>'
+        : '<span class="legend-item"><span class="legend-line"></span> Tüm Sınıflar Ortalaması</span>';
 
     tbody.innerHTML = summaries.map(item => `
         <tr>
             <td>${escapeHtml(item.exam)}</td>
             <td>${item.count}</td>
-            <td>${formatValue(item.tur)}</td>
-            <td>${formatValue(item.ink)}</td>
-            <td>${formatValue(item.din)}</td>
-            <td>${formatValue(item.ing)}</td>
-            <td>${formatValue(item.mat)}</td>
-            <td>${formatValue(item.fen)}</td>
-            <td style="font-weight:bold;color:#2980b9">${formatValue(item.total)}</td>
-            <td class="lgs-only" style="font-weight:bold;color:#e67e22">${formatValue(item.lgs)}</td>
+            <td>${item.tur.toFixed(2)}</td>
+            <td>${item.ink.toFixed(2)}</td>
+            <td>${item.din.toFixed(2)}</td>
+            <td>${item.ing.toFixed(2)}</td>
+            <td>${item.mat.toFixed(2)}</td>
+            <td>${item.fen.toFixed(2)}</td>
+            <td style="font-weight:bold;color:#2980b9">${item.total.toFixed(2)}</td>
+            <td class="lgs-only" style="font-weight:bold;color:#e67e22">${item.lgs.toFixed(2)}</td>
         </tr>`).join('');
 }
 
@@ -905,15 +782,12 @@ function drawEmptySvg(svgId, message) {
         : '';
 }
 
-function drawClassTrendChart(labels, classValues, gradeValues, title, showGradeComparison) {
+function drawClassTrendChart(labels, classValues, schoolValues, title, showSchoolComparison) {
     const svg = document.getElementById('classTrendChart');
-    const width = 1000, height = 400, left = 75, right = 25, top = 40, bottom = 70;
-    const plotWidth = width - left - right;
-    const plotHeight = height - top - bottom;
-    const allValues = showGradeComparison ? classValues.concat(gradeValues) : classValues.slice();
-    let min = Math.min(...allValues);
-    let max = Math.max(...allValues);
-
+    const W = 1000, H = 400, left = 75, right = 25, top = 40, bottom = 70;
+    const plotW = W - left - right, plotH = H - top - bottom;
+    const allValues = showSchoolComparison ? classValues.concat(schoolValues) : classValues.slice();
+    let min = Math.min(...allValues), max = Math.max(...allValues);
     if (!Number.isFinite(min) || !Number.isFinite(max)) {
         drawEmptySvg('classTrendChart', 'Grafik verisi bulunamadı');
         return;
@@ -922,41 +796,41 @@ function drawClassTrendChart(labels, classValues, gradeValues, title, showGradeC
     const padding = (max - min) * 0.12;
     min -= padding;
     max += padding;
-
-    const x = index => labels.length === 1 ? left + plotWidth / 2 : left + (index / (labels.length - 1)) * plotWidth;
-    const y = value => top + plotHeight - ((value - min) / (max - min)) * plotHeight;
-    const toPoints = values => values.map((value, index) => `${x(index).toFixed(1)},${y(value).toFixed(1)}`).join(' ');
+    const x = i => labels.length === 1 ? left + plotW / 2 : left + (i / (labels.length - 1)) * plotW;
+    const y = value => top + plotH - ((value - min) / (max - min)) * plotH;
+    const toPoints = values => values.map((value, i) => `${x(i).toFixed(1)},${y(value).toFixed(1)}`).join(' ');
     let drawing = '';
 
     for (let i = 0; i <= 5; i++) {
         const value = min + (max - min) * (i / 5);
         const yy = y(value);
-        drawing += `<line x1="${left}" y1="${yy}" x2="${width - right}" y2="${yy}" stroke="#e9ecef" stroke-width="1"/>`;
+        drawing += `<line x1="${left}" y1="${yy}" x2="${W - right}" y2="${yy}" stroke="#e9ecef" stroke-width="1"/>`;
         drawing += `<text x="${left - 10}" y="${yy + 4}" text-anchor="end" fill="#6c757d" font-size="12">${value.toFixed(1)}</text>`;
     }
 
-    drawing += `<text x="${width / 2}" y="21" text-anchor="middle" fill="#2c3e50" font-size="16" font-weight="bold">${escapeHtml(title)} — sınavlara göre değişim</text>`;
-    labels.forEach((label, index) => {
-        const xx = x(index);
-        drawing += `<text x="${xx}" y="${height - 22}" text-anchor="middle" fill="#6c757d" font-size="11" transform="rotate(-20 ${xx} ${height - 22})">${escapeHtml(label)}</text>`;
+    drawing += `<text x="${W / 2}" y="21" text-anchor="middle" fill="#2c3e50" font-size="16" font-weight="bold">${escapeHtml(title)} — sınavlara göre değişim</text>`;
+    labels.forEach((label, i) => {
+        const xx = x(i);
+        drawing += `<text x="${xx}" y="${H - 22}" text-anchor="middle" fill="#6c757d" font-size="11" transform="rotate(-20 ${xx} ${H - 22})">${escapeHtml(label)}</text>`;
     });
 
-    if (showGradeComparison && labels.length > 1) {
-        drawing += `<polyline points="${toPoints(gradeValues)}" fill="none" stroke="#e67e22" stroke-width="3" stroke-dasharray="7 6" stroke-linecap="round" stroke-linejoin="round"/>`;
+    if (showSchoolComparison && labels.length > 1) {
+        drawing += `<polyline points="${toPoints(schoolValues)}" fill="none" stroke="#e67e22" stroke-width="3" stroke-dasharray="7 6" stroke-linecap="round" stroke-linejoin="round"/>`;
     }
     if (labels.length > 1) {
         drawing += `<polyline points="${toPoints(classValues)}" fill="none" stroke="#3498db" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>`;
     }
-    classValues.forEach((value, index) => {
-        drawing += `<circle cx="${x(index)}" cy="${y(value)}" r="5" fill="#fff" stroke="#3498db" stroke-width="3"/>`;
+    classValues.forEach((value, i) => {
+        drawing += `<circle cx="${x(i)}" cy="${y(value)}" r="5" fill="#fff" stroke="#3498db" stroke-width="3"/>`;
     });
-    if (showGradeComparison) {
-        gradeValues.forEach((value, index) => {
-            drawing += `<circle cx="${x(index)}" cy="${y(value)}" r="3.5" fill="#e67e22"/>`;
+    if (showSchoolComparison) {
+        schoolValues.forEach((value, i) => {
+            drawing += `<circle cx="${x(i)}" cy="${y(value)}" r="3.5" fill="#e67e22"/>`;
         });
     }
     svg.innerHTML = drawing;
 }
+
 
 function getArrow(current, previous) {
     if (previous === null) return '';
@@ -966,76 +840,59 @@ function getArrow(current, previous) {
 }
 
 function analizGuncelle() {
-    const selectedStudent = document.getElementById('studentFilter').value;
+    const student = document.getElementById('studentFilter').value;
+    let studentIdentity = null;
+    if (student) {
+        try { studentIdentity = JSON.parse(student); } catch (e) { studentIdentity = null; }
+    }
+    const gradeRecords = getActiveGradeData();
+    const filtered = studentIdentity && Array.isArray(studentIdentity)
+        ? gradeRecords.filter(d => d.name === studentIdentity[0] && d.className === studentIdentity[1])
+        : [];
     const tbody = document.querySelector('#resTable tbody');
     const stats = document.getElementById('statsContainer');
-    const emptyColspan = activeGrade === 8 ? 9 : 8;
-
-    let identity = null;
-    if (selectedStudent) {
-        try { identity = JSON.parse(selectedStudent); }
-        catch (error) { identity = null; }
-    }
-
-    const gradeRecords = getActiveGradeData();
-    const examOrder = getExamOrderMap(gradeRecords);
-    let filtered = [];
-    if (Array.isArray(identity) && identity.length >= 2) {
-        const selectedIdentity = {
-            name: identity[0],
-            className: identity[1],
-            studentNo: identity[2] || ''
-        };
-        filtered = gradeRecords.filter(record => getStudentIdentityKey(record) === getStudentIdentityKey(selectedIdentity));
-        filtered = sortRecordsByExamOrder(filtered, examOrder);
-    }
-
-    if (!selectedStudent) {
+    if (!student) {
         const selectedClass = document.getElementById('individualClassFilter').value;
         const message = selectedClass ? 'Lütfen bir öğrenci seçin.' : 'Lütfen önce bir sınıf seçin.';
-        tbody.innerHTML = `<tr><td colspan="${emptyColspan}">${message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9">${message}</td></tr>`;
         stats.innerHTML = '';
         drawEmptyChart('');
         return;
     }
-
     if (!filtered.length) {
-        tbody.innerHTML = `<tr><td colspan="${emptyColspan}">Seçilen sınıf ve öğrenci için kayıt bulunamadı.</td></tr>`;
+        tbody.innerHTML = '<tr><td colspan="9">Seçilen sınıf ve öğrenci için kayıt bulunamadı.</td></tr>';
         stats.innerHTML = '';
         drawEmptyChart('Kayıt bulunamadı');
         return;
     }
 
-    const schoolAverageData = filtered.map(examRecord => {
-        const examRecords = gradeRecords.filter(record => record.exam === examRecord.exam);
-        return examRecords.length
-            ? examRecords.reduce((sum, record) => sum + Number(record[currentBranch] || 0), 0) / examRecords.length
-            : 0;
+    const schoolAvgData = filtered.map(se => {
+        const examData = gradeRecords.filter(d => d.exam === se.exam);
+        return examData.length ? examData.reduce((sum, d) => sum + d[currentBranch], 0) / examData.length : 0;
     });
 
-    tbody.innerHTML = filtered.map((record, index) => {
-        const previous = index > 0 ? filtered[index - 1] : null;
+    tbody.innerHTML = filtered.map((d, i) => {
+        const previous = i > 0 ? filtered[i - 1] : null;
         return `<tr>
-            <td>${escapeHtml(record.exam)}</td>
-            <td>${formatValue(record.tur)}${getArrow(record.tur, previous ? previous.tur : null)}</td>
-            <td>${formatValue(record.ink)}${getArrow(record.ink, previous ? previous.ink : null)}</td>
-            <td>${formatValue(record.din)}${getArrow(record.din, previous ? previous.din : null)}</td>
-            <td>${formatValue(record.ing)}${getArrow(record.ing, previous ? previous.ing : null)}</td>
-            <td>${formatValue(record.mat)}${getArrow(record.mat, previous ? previous.mat : null)}</td>
-            <td>${formatValue(record.fen)}${getArrow(record.fen, previous ? previous.fen : null)}</td>
-            <td style="font-weight:bold;color:#2980b9">${formatValue(record.total)}${getArrow(record.total, previous ? previous.total : null)}</td>
-            <td class="lgs-only" style="font-weight:bold;color:#e67e22">${formatValue(record.lgs)}${getArrow(record.lgs, previous ? previous.lgs : null)}</td>
+            <td>${escapeHtml(d.exam)}</td>
+            <td>${d.tur.toFixed(2)}${getArrow(d.tur, previous ? previous.tur : null)}</td>
+            <td>${d.ink.toFixed(2)}${getArrow(d.ink, previous ? previous.ink : null)}</td>
+            <td>${d.din.toFixed(2)}${getArrow(d.din, previous ? previous.din : null)}</td>
+            <td>${d.ing.toFixed(2)}${getArrow(d.ing, previous ? previous.ing : null)}</td>
+            <td>${d.mat.toFixed(2)}${getArrow(d.mat, previous ? previous.mat : null)}</td>
+            <td>${d.fen.toFixed(2)}${getArrow(d.fen, previous ? previous.fen : null)}</td>
+            <td style="font-weight:bold;color:#2980b9">${d.total.toFixed(2)}${getArrow(d.total, previous ? previous.total : null)}</td>
+            <td class="lgs-only" style="font-weight:bold;color:#e67e22">${d.lgs.toFixed(2)}${getArrow(d.lgs, previous ? previous.lgs : null)}</td>
         </tr>`;
     }).join('');
 
-    const studentValues = filtered.map(record => record[currentBranch]);
-    drawChart(filtered.map(record => record.exam), studentValues, schoolAverageData, branchNames[currentBranch]);
-
+    const studentValues = filtered.map(d => d[currentBranch]);
+    drawChart(filtered.map(d => d.exam), studentValues, schoolAvgData, branchNames[currentBranch]);
     const last = filtered[filtered.length - 1];
-    const averageValue = studentValues.reduce((sum, value) => sum + value, 0) / studentValues.length;
+    const averageValue = studentValues.reduce((a, b) => a + b, 0) / studentValues.length;
     stats.innerHTML = `
-        <div class="stat-card"><h4>Son Durum</h4><div class="stat-value">${formatValue(last[currentBranch])}</div></div>
-        <div class="stat-card"><h4>Öğrenci Ort.</h4><div class="stat-value">${formatValue(averageValue)}</div></div>
+        <div class="stat-card"><h4>Son Durum</h4><div class="stat-value">${last[currentBranch].toFixed(2)}</div></div>
+        <div class="stat-card"><h4>Öğrenci Ort.</h4><div class="stat-value">${averageValue.toFixed(2)}</div></div>
         <div class="stat-card"><h4>Sınav Sayısı</h4><div class="stat-value">${filtered.length}</div></div>`;
 }
 
@@ -1043,50 +900,37 @@ function drawEmptyChart(message) {
     drawEmptySvg('devChart', message);
 }
 
-function drawChart(labels, studentValues, gradeValues, title) {
+function drawChart(labels, student, school, title) {
     const svg = document.getElementById('devChart');
-    const width = 1000, height = 400, left = 70, right = 25, top = 35, bottom = 60;
-    const plotWidth = width - left - right;
-    const plotHeight = height - top - bottom;
-    const allValues = studentValues.concat(gradeValues);
-    let min = Math.min(...allValues);
-    let max = Math.max(...allValues);
-
-    if (!Number.isFinite(min) || !Number.isFinite(max)) {
-        drawEmptyChart('Grafik verisi yok');
-        return;
-    }
+    const W = 1000, H = 400, left = 70, right = 25, top = 35, bottom = 60;
+    const plotW = W - left - right, plotH = H - top - bottom;
+    const all = student.concat(school);
+    let min = Math.min(...all), max = Math.max(...all);
+    if (!Number.isFinite(min) || !Number.isFinite(max)) { drawEmptyChart('Grafik verisi yok'); return; }
     if (min === max) { min -= 1; max += 1; }
-    const padding = (max - min) * 0.12;
-    min -= padding;
-    max += padding;
-
-    const x = index => labels.length === 1 ? left + plotWidth / 2 : left + (index / (labels.length - 1)) * plotWidth;
-    const y = value => top + plotHeight - ((value - min) / (max - min)) * plotHeight;
-    const toPoints = values => values.map((value, index) => `${x(index).toFixed(1)},${y(value).toFixed(1)}`).join(' ');
-    let drawing = '';
-
+    const padding = (max - min) * .12; min -= padding; max += padding;
+    const x = i => labels.length === 1 ? left + plotW / 2 : left + (i / (labels.length - 1)) * plotW;
+    const y = v => top + plotH - ((v - min) / (max - min)) * plotH;
+    const points = arr => arr.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+    let html = '';
     for (let i = 0; i <= 5; i++) {
-        const value = min + (max - min) * (i / 5);
-        const yy = y(value);
-        drawing += `<line x1="${left}" y1="${yy}" x2="${width - right}" y2="${yy}" stroke="#e9ecef" stroke-width="1"/>`;
-        drawing += `<text x="${left - 10}" y="${yy + 4}" text-anchor="end" fill="#6c757d" font-size="12">${value.toFixed(1)}</text>`;
+        const value = min + (max - min) * (i / 5), yy = y(value);
+        html += `<line x1="${left}" y1="${yy}" x2="${W - right}" y2="${yy}" stroke="#e9ecef" stroke-width="1"/>`;
+        html += `<text x="${left - 10}" y="${yy + 4}" text-anchor="end" fill="#6c757d" font-size="12">${value.toFixed(1)}</text>`;
     }
-
-    drawing += `<text x="${width / 2}" y="20" text-anchor="middle" fill="#2c3e50" font-size="16" font-weight="bold">${escapeHtml(title)}</text>`;
-    labels.forEach((label, index) => {
-        const xx = x(index);
-        drawing += `<text x="${xx}" y="${height - 28}" text-anchor="middle" fill="#6c757d" font-size="11" transform="rotate(-20 ${xx} ${height - 28})">${escapeHtml(label)}</text>`;
+    html += `<text x="${W / 2}" y="20" text-anchor="middle" fill="#2c3e50" font-size="16" font-weight="bold">${escapeHtml(title)}</text>`;
+    labels.forEach((label, i) => {
+        const xx = x(i);
+        html += `<text x="${xx}" y="${H - 28}" text-anchor="middle" fill="#6c757d" font-size="11" transform="rotate(-20 ${xx} ${H - 28})">${escapeHtml(label)}</text>`;
     });
-
     if (labels.length > 1) {
-        drawing += `<polyline points="${toPoints(gradeValues)}" fill="none" stroke="#e67e22" stroke-width="3" stroke-dasharray="7 6" stroke-linecap="round" stroke-linejoin="round"/>`;
-        drawing += `<polyline points="${toPoints(studentValues)}" fill="none" stroke="#3498db" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>`;
+        html += `<polyline points="${points(school)}" fill="none" stroke="#e67e22" stroke-width="3" stroke-dasharray="7 6" stroke-linecap="round" stroke-linejoin="round"/>`;
+        html += `<polyline points="${points(student)}" fill="none" stroke="#3498db" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>`;
     }
-    studentValues.forEach((value, index) => {
-        drawing += `<circle cx="${x(index)}" cy="${y(value)}" r="5" fill="#fff" stroke="#3498db" stroke-width="3"/>`;
+    student.forEach((value, i) => {
+        html += `<circle cx="${x(i)}" cy="${y(value)}" r="5" fill="#fff" stroke="#3498db" stroke-width="3"/>`;
     });
-    svg.innerHTML = drawing;
+    svg.innerHTML = html;
 }
 
 function switchMainTab(tab) {
@@ -1108,7 +952,6 @@ function switchMainTab(tab) {
 }
 
 function setBranch(key, button) {
-    if (key === 'lgs' && activeGrade !== 8) return;
     currentBranch = key;
     document.querySelectorAll('#branchTabs button').forEach(item => item.classList.remove('active'));
     button.classList.add('active');
@@ -1116,37 +959,24 @@ function setBranch(key, button) {
 }
 
 function csvEscape(value) {
-    const stringValue = String(value == null ? '' : value);
-    return /[;"\n\r]/.test(stringValue)
-        ? '"' + stringValue.replace(/"/g, '""') + '"'
-        : stringValue;
+    const s = String(value == null ? '' : value);
+    return /[;,"\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
 }
 
 function csvRaporAl() {
     const gradeRecords = getActiveGradeData();
-    if (!gradeRecords.length) {
-        alert('İndirilecek veri bulunamadı.');
-        return;
-    }
-
-    let csv = '\uFEFFÖğrenci Adı Soyadı;Sınıfı;Sınav Adı;Türkçe;Sosyal/İnkılap;Din;İngilizce;Matematik;Fen;Toplam Net;LGS Puanı;Öğrenci No\n';
-    gradeRecords.forEach(record => {
-        csv += [
-            record.name, record.className, record.exam, record.tur, record.ink,
-            record.din, record.ing, record.mat, record.fen, record.total,
-            record.lgs, record.studentNo || ''
-        ].map(csvEscape).join(';') + '\n';
+    if (!gradeRecords.length) { alert('İndirilecek veri bulunamadı.'); return; }
+    let csv = '\uFEFFÖğrenci Adı Soyadı;Sınıfı;Sınav Adı;Türkçe;Sosyal/İnkılap;Din;İngilizce;Matematik;Fen;Toplam Net;LGS Puanı\n';
+    gradeRecords.forEach(d => {
+        csv += [d.name, d.className, d.exam, d.tur, d.ink, d.din, d.ing, d.mat, d.fen, d.total, d.lgs]
+            .map(csvEscape).join(';') + '\n';
     });
-
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = (activeGrade || 'Sinif') + '_Sinif_Deneme_Analiz_Raporu.csv';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    const a = document.createElement('a');
+    a.href = url; a.download = (activeGrade || 'Sinif') + '_Sinif_Deneme_Analiz_Raporu.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 window.addEventListener('DOMContentLoaded', verileriGetir);
