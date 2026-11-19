@@ -8,7 +8,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>8. SINIF</title>
+<title>5, 6, 7 ve 8. Sınıflar - Deneme Analizleri</title>
 <style>
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
@@ -17,6 +17,31 @@ body {
     background: #f0f2f5; margin: 0; padding: 20px; min-height: 100vh; color: #2c3e50;
 }
 .container { max-width: 1100px; margin: auto; width: 100%; }
+.grade-entry {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    padding: 24px; background: linear-gradient(135deg, #edf2f7, #dfe8f1);
+}
+.grade-entry-card {
+    width: min(100%, 680px); background: #fff; border-radius: 18px; padding: 38px;
+    box-shadow: 0 12px 35px rgba(31, 50, 70, .14); text-align: center;
+}
+.grade-entry-kicker { color: #3498db; font-size: 12px; font-weight: 800; letter-spacing: 2px; margin-bottom: 12px; }
+.grade-entry-card h1 { margin: 0; color: #2c3e50; font-size: 27px; }
+.grade-entry-card p { color: #6c7a89; line-height: 1.6; margin: 12px 0 22px; }
+.grade-entry-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.grade-button {
+    min-height: 92px; padding: 18px; color: #2c3e50; background: #f6f8fa;
+    border: 1px solid #dfe6ed; border-radius: 12px; font-size: 22px; font-weight: 800;
+}
+.grade-button:hover, .grade-button:focus-visible { background: #eaf4fc; border-color: #3498db; outline: none; }
+.grade-entry-status { min-height: 20px; font-size: 13px; margin: 18px 0 0 !important; }
+.grade-entry-note { font-size: 11px; color: #88939e !important; margin: 12px 0 0 !important; }
+@media (max-width: 520px) {
+    .grade-entry { padding: 14px; }
+    .grade-entry-card { padding: 26px 18px; }
+    .grade-entry-card h1 { font-size: 22px; }
+    .grade-button { min-height: 78px; font-size: 19px; }
+}
 header {
     background: #2c3e50; color: white; padding: 20px; border-radius: 10px; text-align: center;
     box-shadow: 0 4px 6px rgba(0,0,0,.1); position: relative; min-height: 80px; margin-bottom: 20px;
@@ -96,11 +121,28 @@ footer { text-align: center; padding: 25px 10px; margin-top: 25px; font-size: 12
 </style>
 </head>
 <body>
+<div id="gradeEntry" class="grade-entry">
+    <div class="grade-entry-card">
+        <div class="grade-entry-kicker">ÖĞRENCİ GELİŞİM VE DENEME ANALİZİ</div>
+        <h1>Hangi sınıf düzeyinde işlem yapmak istiyorsunuz?</h1>
+        <p>Bir sınıf düzeyi seçin. Seçiminizin ardından mevcut analiz programı yalnızca o sınıf düzeyinin verileriyle açılacaktır.</p>
+        <div class="grade-entry-grid">
+            <button class="grade-button" type="button" onclick="openGrade(5)">5. Sınıf</button>
+            <button class="grade-button" type="button" onclick="openGrade(6)">6. Sınıf</button>
+            <button class="grade-button" type="button" onclick="openGrade(7)">7. Sınıf</button>
+            <button class="grade-button" type="button" onclick="openGrade(8)">8. Sınıf</button>
+        </div>
+        <p id="gradeEntryStatus" class="grade-entry-status">Veriler hazırlanıyor...</p>
+        <p class="grade-entry-note">Sınıf sütunundaki değerler 5-A, 6/B, 7A veya 8. Sınıf gibi sınıf düzeyini belirten bir biçimde olmalıdır.</p>
+    </div>
+</div>
+<div id="appShell" style="display:none">
 <header>
     <div class="header-controls">
+        <button class="btn-header btn-refresh" type="button" onclick="returnToGradeSelection()">↩ Sınıf Değiştir</button>
     </div>
     <h1>DENEME SINAVI ANALİZLERİ</h1>
-    <h2>8. SINIFLAR</h2>
+    <h2 id="gradeSubtitle">SINIF DÜZEYİ SEÇİLMEDİ</h2>
 </header>
 <div class="container">
 <div class="main-content">
@@ -127,7 +169,7 @@ footer { text-align: center; padding: 25px 10px; margin-top: 25px; font-size: 12
         </div>
         <div class="branch-tabs" id="branchTabs">
             <button class="active" type="button" onclick="setBranch('total', this)">Toplam Net</button>
-            <button type="button" onclick="setBranch('lgs', this)">LGS Puanı</button>
+            <button class="lgs-only" type="button" onclick="setBranch('lgs', this)">LGS Puanı</button>
             <button type="button" onclick="setBranch('tur', this)">Türkçe</button>
             <button type="button" onclick="setBranch('ink', this)">Sosyal/İnkılap</button>
             <button type="button" onclick="setBranch('din', this)">Din</button>
@@ -147,7 +189,7 @@ footer { text-align: center; padding: 25px 10px; margin-top: 25px; font-size: 12
             <table id="resTable">
                 <thead><tr>
                     <th>Sınav</th><th>TÜR</th><th>SOS/İNK</th><th>DİN</th><th>İNG</th>
-                    <th>MAT</th><th>FEN</th><th>TOPLAM NET</th><th>LGS PUANI</th>
+                    <th>MAT</th><th>FEN</th><th>TOPLAM NET</th><th class="lgs-only">LGS PUANI</th>
                 </tr></thead>
                 <tbody></tbody>
             </table>
@@ -160,7 +202,7 @@ footer { text-align: center; padding: 25px 10px; margin-top: 25px; font-size: 12
                 <select id="examFilter" aria-label="Sınav seçin" onchange="siralamaGuncelle()"></select>
                 <select id="classFilter" aria-label="Sınıf seçin" onchange="siralamaGuncelle()"></select>
                 <select id="sortFilter" aria-label="Sıralama ölçütü" onchange="siralamaGuncelle()">
-                    <option value="lgs">Sıralama: LGS Puanı</option>
+                    <option class="lgs-only" value="lgs">Sıralama: LGS Puanı</option>
                     <option value="total">Sıralama: Toplam Net</option>
                     <option value="tur">Sıralama: Türkçe</option>
                     <option value="ink">Sıralama: Sosyal/İnkılap</option>
@@ -176,7 +218,7 @@ footer { text-align: center; padding: 25px 10px; margin-top: 25px; font-size: 12
             <table id="rankTable">
                 <thead><tr>
                     <th>Sıra</th><th>Öğrenci Adı Soyadı</th><th>Sınıf</th><th>TÜR</th><th>SOS/İNK</th><th>DİN</th>
-                    <th>İNG</th><th>MAT</th><th>FEN</th><th>TOPLAM NET</th><th>LGS PUANI</th>
+                    <th>İNG</th><th>MAT</th><th>FEN</th><th>TOPLAM NET</th><th class="lgs-only">LGS PUANI</th>
                 </tr></thead>
                 <tbody></tbody>
             </table>
@@ -194,7 +236,7 @@ footer { text-align: center; padding: 25px 10px; margin-top: 25px; font-size: 12
                     <label for="classMetricFilter"><strong>📊 Gelişim Grafiği:</strong></label>
                     <select id="classMetricFilter" aria-label="Sınıf gelişim grafiği ölçütü" onchange="sinifAnaliziGuncelle()">
                         <option value="total">Genel Net Ortalaması</option>
-                        <option value="lgs">LGS Puan Ortalaması</option>
+                        <option class="lgs-only" value="lgs">LGS Puan Ortalaması</option>
                         <option value="tur">Türkçe Ortalaması</option>
                         <option value="ink">Sosyal/İnkılap Ortalaması</option>
                         <option value="din">Din Kültürü Ortalaması</option>
@@ -211,14 +253,14 @@ footer { text-align: center; padding: 25px 10px; margin-top: 25px; font-size: 12
             <svg id="classTrendChart" viewBox="0 0 1000 400" preserveAspectRatio="none" role="img" aria-label="Sınıf ortalamalarının sınavlara göre değişim grafiği"></svg>
         </div>
         <div class="chart-legend" id="classTrendLegend"></div>
-        <p class="class-analysis-note">Bir sınıf seçildiğinde kesikli çizgi, aynı sınavdaki okul ortalamasını gösterir. Tüm Sınıflar seçildiğinde yalnızca genel ortalama görüntülenir.</p>
+        <p class="class-analysis-note">Bir sınıf seçildiğinde kesikli çizgi, aynı sınavdaki okul ortalamasını gösterir. Tüm Sınıflar seçildiğinde yalnızca seçilen sınıf düzeyinin tüm şubeleri birlikte değerlendirilir.</p>
 
         <h3 class="analysis-subtitle">Sınav Bazlı Sınıf Ortalamaları</h3>
         <div class="table-container">
             <table id="classTrendTable">
                 <thead><tr>
                     <th>Sınav</th><th>Katılan Öğrenci</th><th>TÜR Ort.</th><th>SOS/İNK Ort.</th><th>DİN Ort.</th>
-                    <th>İNG Ort.</th><th>MAT Ort.</th><th>FEN Ort.</th><th>GENEL NET Ort.</th><th>LGS PUAN Ort.</th>
+                    <th>İNG Ort.</th><th>MAT Ort.</th><th>FEN Ort.</th><th>GENEL NET Ort.</th><th class="lgs-only">LGS PUAN Ort.</th>
                 </tr></thead>
                 <tbody></tbody>
             </table>
@@ -227,9 +269,9 @@ footer { text-align: center; padding: 25px 10px; margin-top: 25px; font-size: 12
 </div>
 </div>
 <footer>
-Okul Psikolojik Danışmanı Sezer TEKİN tarafından dijital araçlar kullanılarak tasarlanmıştır.
 </footer>
 
+</div>
 <script>
 /*
   Veri kaynağı Google Sheets değildir; GitHub Actions'ın oluşturduğu data.csv dosyasıdır.
@@ -241,6 +283,73 @@ const DATA_URL = 'data.csv';
 const ALL_CLASSES = '__ALL_CLASSES__';
 let dataStore = [];
 let currentBranch = 'total';
+let activeGrade = null;
+let dataLoaded = false;
+let dataLoadError = '';
+
+// Sınıf adı 5-A, 6/B, 7A, 8. Sınıf gibi başlıyorsa sınıf düzeyini belirler.
+function getGradeFromClassName(className) {
+    const match = String(className || '').trim().match(/^([5-8])(?=\s|[-/.]|[A-Za-zÇĞİÖŞÜçğıöşü]|$)/u);
+    return match ? Number(match[1]) : null;
+}
+
+function getActiveGradeData() {
+    if (activeGrade === null) return [];
+    return dataStore.filter(record => getGradeFromClassName(record.className) === activeGrade);
+}
+
+function openGrade(grade) {
+    activeGrade = Number(grade);
+    document.getElementById('gradeEntry').style.display = 'none';
+    document.getElementById('appShell').style.display = 'block';
+    document.getElementById('gradeSubtitle').textContent = activeGrade + '. SINIFLAR';
+    applyGradeMode();
+    if (dataStore.length) renderActiveGrade();
+    else if (dataLoadError) {
+        document.getElementById('loadingMsg').style.display = 'none';
+        showError('Veriler yüklenemedi: ' + dataLoadError);
+    } else document.getElementById('loadingMsg').style.display = 'block';
+}
+
+function returnToGradeSelection() {
+    activeGrade = null;
+    document.getElementById('appShell').style.display = 'none';
+    document.getElementById('gradeEntry').style.display = 'flex';
+}
+
+function applyGradeMode() {
+    const isGrade8 = activeGrade === 8;
+    document.querySelectorAll('.lgs-only').forEach(element => {
+        element.style.display = isGrade8 ? '' : 'none';
+        if (element.tagName === 'OPTION') element.disabled = !isGrade8;
+    });
+    const sortFilter = document.getElementById('sortFilter');
+    const metricFilter = document.getElementById('classMetricFilter');
+    if (!isGrade8) {
+        if (sortFilter.value === 'lgs') sortFilter.value = 'total';
+        if (metricFilter.value === 'lgs') metricFilter.value = 'total';
+        if (currentBranch === 'lgs') currentBranch = 'total';
+        document.querySelectorAll('#branchTabs button').forEach(button => button.classList.remove('active'));
+        const totalButton = document.querySelector('#branchTabs button[onclick*="total"]');
+        if (totalButton) totalButton.classList.add('active');
+    }
+}
+
+function renderActiveGrade() {
+    if (activeGrade === null) return;
+    applyGradeMode();
+    dropdownlariGuncelle();
+    analizGuncelle();
+    siralamaGuncelle();
+    sinifAnaliziGuncelle();
+    const gradeRecords = getActiveGradeData();
+    if (!gradeRecords.length && dataStore.length) {
+        showError(activeGrade + '. sınıfa ait kayıt bulunamadı. CSV dosyasındaki “Sınıfı” sütununda 5-A, 6/B, 7A veya 8-A gibi sınıf bilgileri bulunduğunu kontrol edin.');
+    } else {
+        hideError();
+    }
+}
+
 
 const branchNames = {
     total:'Toplam Net', lgs:'LGS Puanı', tur:'Türkçe', ink:'Sosyal/İnkılap',
@@ -360,13 +469,21 @@ async function verileriGetir() {
         if (!parsed.length) throw new Error('Kullanılabilir öğrenci kaydı bulunamadı. Sütun sırasını kontrol edin.');
 
         dataStore = parsed;
-        dropdownlariGuncelle();
-        analizGuncelle();
-        siralamaGuncelle();
-        sinifAnaliziGuncelle();
+        dataLoaded = true;
+        dataLoadError = '';
+        const gradeStatus = document.getElementById('gradeEntryStatus');
+        const gradeCounts = [5, 6, 7, 8].map(grade => {
+            const gradeStudents = new Set(parsed.filter(d => getGradeFromClassName(d.className) === grade).map(d => JSON.stringify([d.name, d.className])));
+            return `${grade}. sınıf: ${gradeStudents.size} öğrenci`;
+        }).join('  •  ');
+        gradeStatus.textContent = 'Veriler yüklendi. ' + gradeCounts;
+        if (activeGrade !== null) renderActiveGrade();
     } catch (e) {
         console.error(e);
         dataStore = [];
+        dataLoaded = true;
+        dataLoadError = e.message;
+        document.getElementById('gradeEntryStatus').textContent = 'Veriler yüklenemedi: ' + e.message;
         document.getElementById('studentFilter').innerHTML = '<option value="">-- Veri alınamadı --</option>';
         document.getElementById('examFilter').innerHTML = '<option value="">-- Veri alınamadı --</option>';
         document.getElementById('classFilter').innerHTML = '<option value="">-- Veri alınamadı --</option>';
@@ -401,11 +518,12 @@ function updateIndividualStudentOptions() {
     studentSelect.innerHTML = '';
     addOption(studentSelect, '-- Öğrenci Seçin --', '');
 
+    const gradeRecords = getActiveGradeData();
     const availableRecords = !selectedClass
         ? []
         : selectedClass === ALL_CLASSES
-            ? dataStore
-            : dataStore.filter(d => d.className === selectedClass);
+            ? gradeRecords
+            : gradeRecords.filter(d => d.className === selectedClass);
 
     // Aynı isimli öğrencileri sınıf bilgisiyle ayrı kayıtlar olarak tut.
     const uniqueStudents = new Map();
@@ -437,12 +555,13 @@ function bireyselSinifGuncelle() {
 }
 
 function dropdownlariGuncelle() {
+    const gradeRecords = getActiveGradeData();
     const individualClassSelect = document.getElementById('individualClassFilter');
     const previousIndividualClass = individualClassSelect.value;
     individualClassSelect.innerHTML = '';
     addOption(individualClassSelect, '-- Sınıf Seçin --', '');
     addOption(individualClassSelect, 'Tüm Sınıflar', ALL_CLASSES, true);
-    [...new Set(dataStore.map(d => d.className))].sort((a, b) => a.localeCompare(b, 'tr'))
+    [...new Set(gradeRecords.map(d => d.className))].sort((a, b) => a.localeCompare(b, 'tr'))
         .forEach(className => addOption(individualClassSelect, className, className));
     const availableIndividualClasses = [...individualClassSelect.options].map(option => option.value);
     individualClassSelect.value = availableIndividualClasses.includes(previousIndividualClass) && previousIndividualClass !== ''
@@ -454,7 +573,7 @@ function dropdownlariGuncelle() {
     classAnalysisSelect.innerHTML = '';
     addOption(classAnalysisSelect, '-- Sınıf Seçin --', '');
     addOption(classAnalysisSelect, 'Tüm Sınıflar', ALL_CLASSES, true);
-    [...new Set(dataStore.map(d => d.className))].sort((a, b) => a.localeCompare(b, 'tr'))
+    [...new Set(gradeRecords.map(d => d.className))].sort((a, b) => a.localeCompare(b, 'tr'))
         .forEach(className => addOption(classAnalysisSelect, className, className));
     const analysisClasses = [...classAnalysisSelect.options].map(o => o.value);
     classAnalysisSelect.value = analysisClasses.includes(previousAnalysisClass) && previousAnalysisClass !== ''
@@ -465,7 +584,7 @@ function dropdownlariGuncelle() {
     examSelect.innerHTML = '';
     addOption(examSelect, '-- Sınav Seçin --', '');
     addOption(examSelect, '🏆 Tüm Sınavların Genel Ortalaması', 'GENEL_ORTALAMA', true);
-    [...new Set(dataStore.map(d => d.exam))].forEach(exam => addOption(examSelect, exam, exam));
+    [...new Set(gradeRecords.map(d => d.exam))].forEach(exam => addOption(examSelect, exam, exam));
     if ([...examSelect.options].some(o => o.value === previousExam)) examSelect.value = previousExam;
 
     const classSelect = document.getElementById('classFilter');
@@ -473,7 +592,7 @@ function dropdownlariGuncelle() {
     classSelect.innerHTML = '';
     addOption(classSelect, '-- Sınıf Seçin --', '');
     addOption(classSelect, 'Tüm Sınıflar', ALL_CLASSES, true);
-    [...new Set(dataStore.map(d => d.className))].sort((a, b) => a.localeCompare(b, 'tr'))
+    [...new Set(gradeRecords.map(d => d.className))].sort((a, b) => a.localeCompare(b, 'tr'))
         .forEach(className => addOption(classSelect, className, className));
     const availableClasses = [...classSelect.options].map(o => o.value);
     classSelect.value = availableClasses.includes(previousClass) && previousClass !== ''
@@ -494,9 +613,10 @@ function siralamaGuncelle() {
         return;
     }
 
+    const gradeRecords = getActiveGradeData();
     const classData = selectedClass === ALL_CLASSES
-        ? dataStore.slice()
-        : dataStore.filter(d => d.className === selectedClass);
+        ? gradeRecords.slice()
+        : gradeRecords.filter(d => d.className === selectedClass);
 
     let displayData = [];
     if (exam === 'GENEL_ORTALAMA') {
@@ -538,7 +658,7 @@ function siralamaGuncelle() {
         <div class="stat-card"><h4>MAT Ort.</h4><div class="stat-value">${average('mat')}</div></div>
         <div class="stat-card"><h4>FEN Ort.</h4><div class="stat-value">${average('fen')}</div></div>
         <div class="stat-card highlight"><h4>Top. Net</h4><div class="stat-value" style="color:#2980b9">${average('total')}</div></div>
-        <div class="stat-card highlight"><h4>LGS Puan</h4><div class="stat-value" style="color:#e67e22">${average('lgs')}</div></div>`;
+        ${activeGrade === 8 ? `<div class="stat-card highlight"><h4>LGS Puan</h4><div class="stat-value" style="color:#e67e22">${average('lgs')}</div></div>` : ''}`;
     avgContainer.style.display = 'flex';
 
     const highlight = key => sortKey === key ? 'font-weight:bold;background:#fff9db' : '';
@@ -554,7 +674,7 @@ function siralamaGuncelle() {
             <td style="${highlight('mat')}">${d.mat.toFixed(2)}</td>
             <td style="${highlight('fen')}">${d.fen.toFixed(2)}</td>
             <td style="color:#2980b9;${highlight('total')}">${d.total.toFixed(2)}</td>
-            <td style="color:#e67e22;${highlight('lgs')}">${d.lgs.toFixed(2)}</td>
+            <td class="lgs-only" style="color:#e67e22;${highlight('lgs')}">${d.lgs.toFixed(2)}</td>
         </tr>`).join('');
 }
 
@@ -585,9 +705,10 @@ function sinifAnaliziGuncelle() {
         return;
     }
 
+    const gradeRecords = getActiveGradeData();
     const selectedRecords = selectedClass === ALL_CLASSES
-        ? dataStore.slice()
-        : dataStore.filter(d => d.className === selectedClass);
+        ? gradeRecords.slice()
+        : gradeRecords.filter(d => d.className === selectedClass);
 
     if (!selectedRecords.length) {
         tbody.innerHTML = '<tr><td colspan="10">Seçilen sınıfa ait kayıt bulunamadı.</td></tr>';
@@ -597,7 +718,7 @@ function sinifAnaliziGuncelle() {
     }
 
     // Sınav sırası, CSV dosyasındaki ilk görünme sırasına göre korunur.
-    const examOrder = [...new Set(dataStore.map(d => d.exam))];
+    const examOrder = [...new Set(gradeRecords.map(d => d.exam))];
     const summaries = examOrder.map(exam => {
         const records = selectedRecords.filter(d => d.exam === exam);
         if (!records.length) return null;
@@ -605,7 +726,7 @@ function sinifAnaliziGuncelle() {
         ['tur', 'ink', 'din', 'ing', 'mat', 'fen', 'total', 'lgs'].forEach(key => {
             summary[key] = ortalama(records, key);
         });
-        const schoolRecords = dataStore.filter(d => d.exam === exam);
+        const schoolRecords = gradeRecords.filter(d => d.exam === exam);
         summary.school = {};
         ['tur', 'ink', 'din', 'ing', 'mat', 'fen', 'total', 'lgs'].forEach(key => {
             summary.school[key] = ortalama(schoolRecords, key);
@@ -649,7 +770,7 @@ function sinifAnaliziGuncelle() {
             <td>${item.mat.toFixed(2)}</td>
             <td>${item.fen.toFixed(2)}</td>
             <td style="font-weight:bold;color:#2980b9">${item.total.toFixed(2)}</td>
-            <td style="font-weight:bold;color:#e67e22">${item.lgs.toFixed(2)}</td>
+            <td class="lgs-only" style="font-weight:bold;color:#e67e22">${item.lgs.toFixed(2)}</td>
         </tr>`).join('');
 }
 
@@ -724,8 +845,9 @@ function analizGuncelle() {
     if (student) {
         try { studentIdentity = JSON.parse(student); } catch (e) { studentIdentity = null; }
     }
+    const gradeRecords = getActiveGradeData();
     const filtered = studentIdentity && Array.isArray(studentIdentity)
-        ? dataStore.filter(d => d.name === studentIdentity[0] && d.className === studentIdentity[1])
+        ? gradeRecords.filter(d => d.name === studentIdentity[0] && d.className === studentIdentity[1])
         : [];
     const tbody = document.querySelector('#resTable tbody');
     const stats = document.getElementById('statsContainer');
@@ -745,7 +867,7 @@ function analizGuncelle() {
     }
 
     const schoolAvgData = filtered.map(se => {
-        const examData = dataStore.filter(d => d.exam === se.exam);
+        const examData = gradeRecords.filter(d => d.exam === se.exam);
         return examData.length ? examData.reduce((sum, d) => sum + d[currentBranch], 0) / examData.length : 0;
     });
 
@@ -760,7 +882,7 @@ function analizGuncelle() {
             <td>${d.mat.toFixed(2)}${getArrow(d.mat, previous ? previous.mat : null)}</td>
             <td>${d.fen.toFixed(2)}${getArrow(d.fen, previous ? previous.fen : null)}</td>
             <td style="font-weight:bold;color:#2980b9">${d.total.toFixed(2)}${getArrow(d.total, previous ? previous.total : null)}</td>
-            <td style="font-weight:bold;color:#e67e22">${d.lgs.toFixed(2)}${getArrow(d.lgs, previous ? previous.lgs : null)}</td>
+            <td class="lgs-only" style="font-weight:bold;color:#e67e22">${d.lgs.toFixed(2)}${getArrow(d.lgs, previous ? previous.lgs : null)}</td>
         </tr>`;
     }).join('');
 
@@ -842,16 +964,17 @@ function csvEscape(value) {
 }
 
 function csvRaporAl() {
-    if (!dataStore.length) { alert('İndirilecek veri bulunamadı.'); return; }
+    const gradeRecords = getActiveGradeData();
+    if (!gradeRecords.length) { alert('İndirilecek veri bulunamadı.'); return; }
     let csv = '\uFEFFÖğrenci Adı Soyadı;Sınıfı;Sınav Adı;Türkçe;Sosyal/İnkılap;Din;İngilizce;Matematik;Fen;Toplam Net;LGS Puanı\n';
-    dataStore.forEach(d => {
+    gradeRecords.forEach(d => {
         csv += [d.name, d.className, d.exam, d.tur, d.ink, d.din, d.ing, d.mat, d.fen, d.total, d.lgs]
             .map(csvEscape).join(';') + '\n';
     });
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = 'LGS_Analiz_Raporu.csv';
+    a.href = url; a.download = (activeGrade || 'Sinif') + '_Sinif_Deneme_Analiz_Raporu.csv';
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
